@@ -10,12 +10,16 @@
   },
   "dependencies": {
     "@openzeppelin/contracts": "^5.0.2",
+    "amqplib": "^0.10.4",
+    "cors": "^2.8.5",
     "next": "14.2.2",
     "react": "^18",
     "react-dom": "^18",
     "solc": "^0.8.25"
   },
   "devDependencies": {
+    "@types/amqplib": "^0.10.5",
+    "@types/cors": "^2.8.17",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",

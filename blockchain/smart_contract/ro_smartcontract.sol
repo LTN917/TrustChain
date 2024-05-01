@@ -30,7 +30,7 @@ contract RO_smart_contract is Ownable, Initializable {
         transferOwnership(msg.sender);  // 将合约所有者设置为部署者
     }
 
-    // 修改或新增数据认证
+    // 修改或新增數據驗證
     function set_data_auth(bytes32 data_id, bytes32 data_auth) public onlyOwner {
         dataAuthMap[data_id] = DataAuthEntry({
             dataAuth: data_auth,
@@ -38,7 +38,7 @@ contract RO_smart_contract is Ownable, Initializable {
         });
     }
 
-    // 验证数据认证
+    // 驗證數據認證
     function verify_rp(bytes32 data_id, bytes32 rp_data) public onlyOwner view returns (bool) {
         DataAuthEntry memory entry = dataAuthMap[data_id];
         return entry.dataAuth == rp_data && entry.timestamp > 0;
