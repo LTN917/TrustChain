@@ -16,7 +16,8 @@
     "next": "14.2.2",
     "react": "^18",
     "react-dom": "^18",
-    "solc": "^0.8.25"
+    "solc": "^0.8.25",
+    "web3": "^4.8.0"
   },
   "devDependencies": {
     "@types/amqplib": "^0.10.5",
@@ -24,6 +25,7 @@
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
+    "@types/web3": "^1.2.2",
     "eslint": "^8",
     "eslint-config-next": "14.2.2",
     "postcss": "^8",
