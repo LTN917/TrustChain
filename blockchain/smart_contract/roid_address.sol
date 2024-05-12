@@ -7,28 +7,33 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract Roid_address is Ownable {
     // Mapping for roid to vaultBX address
-    mapping(bytes32 => address) private roidVaultBX;
+    mapping(string => address) private roidVaultBX;
 
     // Mapping for roid to smart contract address
-    mapping(bytes32 => address) private roidSmartContract;
+    mapping(string => address) private roidSmartContract;
+
+    // Modified constructor to pass initial owner
+    constructor() Ownable(msg.sender) {
+        // Pass the initial owner address to the Ownable contract
+    }
 
     // Function to set or update the vaultBX address for a given roid
-    function setVaultBX(bytes32 roid, address vaultBX) public onlyOwner {
-        roidVaultBX[roid] = vaultBX;
+    function setVaultBX(string memory roid_hashing, address vaultBX_address) public onlyOwner {
+        roidVaultBX[roid_hashing] = vaultBX_address;
     }
 
     // Function to set or update the smart contract address for a given roid
-    function setSmartContract(bytes32 roid, address smartContract) public onlyOwner {
-        roidSmartContract[roid] = smartContract;
+    function setSmartContract(string memory roid_hash, address smartContract_address) public onlyOwner {
+        roidSmartContract[roid_hash] = smartContract_address;
     }
 
     // Function to verify if the given vaultBX matches the stored address for the roid
-    function verifyVaultBX(bytes32 roid, address vaultBX) public view returns (bool) {
-        return roidVaultBX[roid] == vaultBX;
+    function verifyVaultBX(string memory roid_hashing, address vaultBX_address) public view returns (bool) {
+        return roidVaultBX[roid_hashing] == vaultBX_address;
     }
 
     // Function to retrieve the smart contract address associated with a given roid
-    function getSmartContract(bytes32 roid) public onlyOwner view returns (address) {
-        return roidSmartContract[roid];
+    function getSmartContract(string memory roid_hashing) public onlyOwner view returns (address) {
+        return roidSmartContract[roid_hashing];
     }
 }
