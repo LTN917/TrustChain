@@ -1,11 +1,15 @@
+/*
+    run the file to create the first roid_address smart contract
+    npx ts-node -P tsconfig.server.json ./blockchain/ethereum_env.ts
+*/ 
+
 import Web3 from 'web3';
 
+export { roid_address_smart_contract_instance, deploy_ro_smartcontract, get_ro_smartcontract_contract_instance };
 
-export { web3, get_public_wallet, deploy_roid_address, roid_address_smart_contract_instance, };
 
-
-// creating Web3 instance to localhost Ganache
-const web3 = new Web3('http://localhost:7545');
+// creating Web3 instance to localhost Hardhat
+const web3 = new Web3('http://localhost:8545');
 
 //ganache first wallet address
 const get_public_wallet = async () => {
@@ -179,28 +183,31 @@ const roid_address_bytecode ="608060405234801561000f575f80fd5b50335f73ffffffffff
 
 const deploy_roid_address = async () => {
 
-    const public_wallet = await get_public_wallet();
+    try{
+        const public_wallet = await get_public_wallet();
 
-    const contract = new web3.eth.Contract(roid_address_abi);
-    const contract_instance = await contract.deploy({
-        data: roid_address_bytecode,
-        arguments: []
-    })
-    .send({
-        from: public_wallet,
-        gas: '3000000',
-        gasPrice: '863252572'
-    });
+        const contract = new web3.eth.Contract(roid_address_abi as any);
+        const contract_instance = await contract.deploy({
+            data: roid_address_bytecode,
+            arguments: []
+        })
+        .send({
+            from: public_wallet,
+            gas: 5000000,      // 增加 gas 限制
+            gasPrice: '900000000'    
+        });
 
-    console.log(`[ deploy smart contract ] roid_address deploy at : ${contract_instance.options.address} [OK]`);
+        console.log(`[deploy smart contract] roid_address deploy at : ${contract_instance.options.address} [OK]`);
+
+        return contract_instance.options.address;
+    }catch(err){
+        console.log(`[deploy smart contract] roid_address error : ${err}`);
+    }
 }
 
-deploy_roid_address();
-;
+const roid_address_address = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
 
-const roid_address_address = "";
-
-const roid_address_smart_contract_instance = new web3.eth.Contract(roid_address_abi, roid_address_address);
+const roid_address_smart_contract_instance = new web3.eth.Contract(roid_address_abi as any, roid_address_address);
 
 // smart contract - ro_smartcontract
 const ro_smartcontract_abi = [
@@ -412,25 +419,36 @@ const deploy_ro_smartcontract = async (RO_id_hashing : string) => {
 
     const public_wallet = await get_public_wallet();
 
-    // deploy
-    const contract = new web3.eth.Contract(ro_smartcontract_abi);
-    const contract_instance = await contract.deploy({
-        data: ro_smartcontract_bytecode,
-        arguments: [RO_id_hashing]
-    })
-    .send({
-        from: public_wallet,
-        gas: '3000000',
-        gasPrice: '30000000000'
-    });
+    try{
+        // deploy
+        const contract = new web3.eth.Contract(ro_smartcontract_abi as any);
+        const contract_instance = await contract.deploy({
+            data: ro_smartcontract_bytecode,
+            arguments: [RO_id_hashing]
+        })
+        .send({
+            from: public_wallet,
+            gas: 3000000,
+            gasPrice: '900000000'
+        });
+    
+        console.log(`[deploy smart contract] roid_smartcontract deploy for "${RO_id_hashing}" at "${contract_instance.options.address}" [OK]`);
+    
+        // add to roid_address
+        const contarct_address = contract_instance.options.address;
+        (await roid_address_smart_contract_instance).methods.setSmartContract(RO_id_hashing, contarct_address).send({ from: public_wallet });
 
-    console.log(`[ deploy smart contract ] roi_smartcontrac deploy for ${RO_id_hashing}  at : ${contract_instance.options.address} [OK]`);
+        console.log(`[smart contract method] roid_smartcontract use setSamrtContract mapping : ${RO_id_hashing} => ${contarct_address} [OK]`);
 
-    // add to roid_address
-    // (await roid_address_smart_contract_instance).methods.
+    }catch(err){
+        console.log(`[deploy smart contract] deploy_ro_smartcontract error : ${err}`);
+    }
 }
 
-
-const get_ro_smartcontract_contract_instance = async ( Ro_id_hashing : string ) => {
-
+const get_ro_smartcontract_contract_instance = async ( contract_address : string ) => {
+    const ro_smartcontract_smart_contract_instance = new web3.eth.Contract(ro_smartcontract_abi as any, contract_address);
+    return ro_smartcontract_smart_contract_instance;
 }
+
+/* ===============================  create the first roid_address smart contract ========================*/ 
+deploy_roid_address();
