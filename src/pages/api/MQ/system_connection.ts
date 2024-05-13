@@ -51,7 +51,7 @@ async function startConsumer(){
     await localChannel.consume(queue,(msg:any)=>{
       if(msg){
         console.log('Received:', msg.content.toString());
-        await api_upto_blockchain(msg.content.toString()); // API - processing after receiving the data
+        api_upto_blockchain(msg.content.toString()); // API - processing after receiving the data
         localChannel.ack(msg);
       }
     });
@@ -66,9 +66,9 @@ async function api_upto_blockchain(msgContent:string){
   try{
     const data = JSON.parse(msgContent);
     const response = await axios.post('http://localhost:3000/api/blockchain/upto_blockchain',data);
-    console.log(`API Response: ${response.result}`) // return the result of processing
+    console.log(`API Response: ${response}`) // return the result of processing
   }catch(err){
-    console.log(`Consumer Fail to use processing data API: ${err}`);
+    console.log(`[API] Consumer Fail to use processing data API: ${err}`);
   }
 }
 

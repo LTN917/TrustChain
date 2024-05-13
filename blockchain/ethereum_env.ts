@@ -440,6 +440,8 @@ const deploy_ro_smartcontract = async (RO_id_hashing : string) => {
 
         console.log(`[smart contract method] roid_smartcontract use setSamrtContract mapping : ${RO_id_hashing} => ${contarct_address} [OK]`);
 
+        return contarct_address;
+
     }catch(err){
         console.log(`[deploy smart contract] deploy_ro_smartcontract error : ${err}`);
     }

@@ -1,10 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { web3, get_public_wallet } from '../../../../blockchain/ethereum_env';
+import { roid_address_smart_contract_instance, deploy_ro_smartcontract, get_ro_smartcontract_contract_instance } from '../../../../blockchain/ethereum_env';
 import crypto from 'crypto';
-
-// public wallet
-
-const public_wallet = get_public_wallet();
 
 // SHA-256
 const sha256 = (data: string) => crypto.createHash('sha256').update(data).digest('hex');
@@ -47,21 +43,27 @@ const dataFormatting = async (entry:Entry) => {
     return entry_hashing;
 }
 
-// return the address of RO's smart contract ( if not exist then create )
-const get_ro_contract_address = async (Ro_id : string) => {
+// 如果使用者有 smart contract 就拿來使用，沒有就創建一個
+const get_ro_contract_address = async (Ro_id_hashing : string) => {
 
+  const ro_contract_address = (await roid_address_smart_contract_instance).methods.getSmartContract(Ro_id_hashing);
+
+  if(ro_contract_address == "0x0000000000000000000000000000000000000000"){
+    return await deploy_ro_smartcontract(Ro_id_hashing);
+  }else{
+    return ro_contract_address;
+  }
 }
 
 // 部署新合約或與現有合約互動
 const deployOrInteractWithContract = async (entry_hashing:Entry_Hashing) => {
 
-  // 如果使用者有 smart contract 就拿來使用，沒有就創建一個
-  const ro_smartcontrat = get_ro_contract_address(entry_hashing.RO_id_hash);
-
+  const ro_smartcontract_address = await get_ro_contract_address(entry_hashing.RO_id_hash);
+  const ro_smartcontract_instance = get_ro_smartcontract_contract_instance(ro_smartcontract_address);
   
-
+  // 將 RO hashing 資料上鏈
+  (await ro_smartcontract_instance).methods.set_data_auth(entry_hashing.data_id_hash, entry_hashing.data_auth_hash);
 };
-
 
 
 // upto_blockchain API
@@ -74,8 +76,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           // up entry hashing to blockchain
           await deployOrInteractWithContract(entry_hashing);
 
+          console.log(`[API] data up to blockchain for data : ${entry_hashing.data_id_hash} [OK]`)
 
-            res.status(200).json({ message: 'Data received and processed', result: 'entry up to blockchain OK!' });
+          res.status(200).json({ message: 'Data received and up to blockchain', result: 'entry up to blockchain OK!' });
         }else{
             res.setHeader('Allow', ['POST']);
             res.status(405).end(`Method ${req.method} Not Allowed`);      
