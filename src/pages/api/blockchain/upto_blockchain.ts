@@ -1,5 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { roid_address_smart_contract_instance, deploy_ro_smartcontract, get_ro_smartcontract_contract_instance } from '../../../../blockchain/ethereum_env';
+import { get_sign_tx } from '../../../../vautlBX/methods';
 import crypto from 'crypto';
 
 // SHA-256
@@ -26,7 +27,7 @@ type Entry_Hashing = {
 }
 
 // return the format of entry
-const dataFormatting = async (entry:Entry) => {
+const dataHashing = async (entry:Entry) => {
 
     // processing data_auth
     let role_hash = entry.data_auth.role.map((role:string) => sha256(role + entry.RO_id + entry.data_id))
@@ -49,13 +50,14 @@ const get_ro_contract_address = async (Ro_id_hashing : string) => {
   const ro_contract_address = (await roid_address_smart_contract_instance).methods.getSmartContract(Ro_id_hashing);
 
   if(ro_contract_address == "0x0000000000000000000000000000000000000000"){
-    return await deploy_ro_smartcontract(Ro_id_hashing);
+    let new_ro_contract_address = await deploy_ro_smartcontract(Ro_id_hashing)
+    return new_ro_contract_address;
   }else{
     return ro_contract_address;
   }
 }
 
-// 部署新合約或與現有合約互動
+// 使用合約方法上傳資料到鏈上
 const deployOrInteractWithContract = async (entry_hashing:Entry_Hashing) => {
 
   const ro_smartcontract_address = await get_ro_contract_address(entry_hashing.RO_id_hash);
@@ -65,29 +67,30 @@ const deployOrInteractWithContract = async (entry_hashing:Entry_Hashing) => {
   (await ro_smartcontract_instance).methods.set_data_auth(entry_hashing.data_id_hash, entry_hashing.data_auth_hash);
 };
 
-
-// upto_blockchain API
+// ================================== upto_blockchain API ================================== 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-    try{
-        if(req.method === 'POST'){
-          // formatting req entry
-          const entry_hashing = await dataFormatting(req.body);
+  try{
+    if(req.method === 'POST'){
+      
+      // hashing req entry
+      const entry_hashing = await dataHashing(req.body);
 
-          // up entry hashing to blockchain
-          await deployOrInteractWithContract(entry_hashing);
+      // return valid send sign_tx
+      const sign_tx = await get_sign_tx(entry_hashing.RO_id_hash, "data_up_to_blockchain");
 
-          console.log(`[API] data up to blockchain for data : ${entry_hashing.data_id_hash} [OK]`)
-
-          res.status(200).json({ message: 'Data received and up to blockchain', result: 'entry up to blockchain OK!' });
-        }else{
-            res.setHeader('Allow', ['POST']);
-            res.status(405).end(`Method ${req.method} Not Allowed`);      
-        }
-        
-    }catch (err){
-        console.error(`[API] upto_blockchain request failed: ${err}`);
-        res.status(500).json({ error: 'Internal server error' });    
+      // up entry hashing to blockchain
+      if(sign_tx){
+        await deployOrInteractWithContract(entry_hashing);
+        console.log(`[API] data up to blockchain for data : ${entry_hashing.data_id_hash} [OK]`)
+        res.status(200).json({ message: 'Data received and up to blockchain', result: 'entry up to blockchain OK!' });
+      }
+      res.status(405).json({ message: 'the sign_tx of RO is not valid', result: 'entry up to blockchain Failed!' })
     }
+      
+  }catch (err){
+    console.error(`[API] upto_blockchain request failed: ${err}`);
+    res.status(500).json({ error: 'Internal server error' });    
+  }
 }
 
 

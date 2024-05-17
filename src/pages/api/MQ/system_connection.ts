@@ -46,13 +46,13 @@ async function finRabbitMQ(){
 // start a consumer 
 async function startConsumer(){
   try{
-    const localChannel = await connection.createChannel();
-    await localChannel.prefetch(1); // fair dispatch
-    await localChannel.consume(queue,(msg:any)=>{
+    const ConsumerChannel = await connection.createChannel();
+    await ConsumerChannel.prefetch(1); // fair dispatch
+    await ConsumerChannel.consume(queue,(msg:any)=>{
       if(msg){
         console.log('Received:', msg.content.toString());
         api_upto_blockchain(msg.content.toString()); // API - processing after receiving the data
-        localChannel.ack(msg);
+        ConsumerChannel.ack(msg);
       }
     });
   }catch(err){
@@ -74,16 +74,24 @@ async function api_upto_blockchain(msgContent:string){
 
 // adjust number of consumers
 async function adjustConsumers(){
-  try{
+  try {
     const { messageCount } = await channel.checkQueue(queue);
-    while(messageCount > 100 && consumer_number < max_consumer_number){
-      await startConsumer();
-      consumer_number++;
-    }  
-  }catch(err){
+    if (messageCount > 100 && consumer_number < max_consumer_number) {
+      while (messageCount / consumer_number > 50 && consumer_number < max_consumer_number) {
+        await startConsumer();
+        consumer_number++;
+        console.log(`Increased consumers to ${consumer_number}`);
+      }
+    } else if (consumer_number > 1 && messageCount / consumer_number < 20) {
+      // Logic to reduce consumers if needed, ensuring at least one consumer remains
+      consumer_number--;
+      console.log(`Decreased consumers to ${consumer_number}`);
+    }
+  } catch (err) {
     console.log(`Fail to adjust Consumer: ${err}`);
   }
 }
+
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
 
@@ -98,7 +106,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       res.setHeader('Allow', ['POST']);
       res.status(405).end(`Method ${req.method} Not Allowed`);
     }
-    // await finRabbitMQ();
   }catch(err){
     console.error(`[API] system_connection request failed: ${err}`);
     res.status(500).json({ error: 'Internal server error' });
