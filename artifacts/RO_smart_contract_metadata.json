@@ -1,6 +1,6 @@
 {
 	"compiler": {
-		"version": "0.8.24+commit.e11b9ed9"
+		"version": "0.8.20+commit.a1b79de6"
 	},
 	"language": "Solidity",
 	"output": {
@@ -104,9 +104,21 @@
 				"name": "dataAuthMap",
 				"outputs": [
 					{
-						"internalType": "string",
+						"components": [
+							{
+								"internalType": "string[]",
+								"name": "roles",
+								"type": "string[]"
+							},
+							{
+								"internalType": "string[]",
+								"name": "goals",
+								"type": "string[]"
+							}
+						],
+						"internalType": "struct RO_smart_contract.DataAuthFormat",
 						"name": "dataAuth",
-						"type": "string"
+						"type": "tuple"
 					},
 					{
 						"internalType": "uint256",
@@ -158,9 +170,21 @@
 						"type": "string"
 					},
 					{
-						"internalType": "string",
+						"components": [
+							{
+								"internalType": "string[]",
+								"name": "roles",
+								"type": "string[]"
+							},
+							{
+								"internalType": "string[]",
+								"name": "goals",
+								"type": "string[]"
+							}
+						],
+						"internalType": "struct RO_smart_contract.DataAuthFormat",
 						"name": "data_auth",
-						"type": "string"
+						"type": "tuple"
 					}
 				],
 				"name": "set_data_auth",
@@ -189,9 +213,21 @@
 						"type": "string"
 					},
 					{
-						"internalType": "string",
+						"components": [
+							{
+								"internalType": "string[]",
+								"name": "roles",
+								"type": "string[]"
+							},
+							{
+								"internalType": "string[]",
+								"name": "goals",
+								"type": "string[]"
+							}
+						],
+						"internalType": "struct RO_smart_contract.DataAuthFormat",
 						"name": "rp_data",
-						"type": "string"
+						"type": "tuple"
 					}
 				],
 				"name": "verify_rp",
@@ -200,6 +236,11 @@
 						"internalType": "bool",
 						"name": "",
 						"type": "bool"
+					},
+					{
+						"internalType": "string",
+						"name": "",
+						"type": "string"
 					}
 				],
 				"stateMutability": "view",
@@ -303,11 +344,11 @@
 			]
 		},
 		"blockchain\\smart_contract\\ro_smartcontract.sol": {
-			"keccak256": "0x2736a6c8cec8976929fb14dc8cfbe19f3c8341cbb31d6f5d7d094829e8bf861f",
+			"keccak256": "0x6c0884066d5784d5e6716f2e5c5e80ac1d46ea1b7921434d7e1a0a1518fc73c1",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://dae21ba2ca2e29c6e340251241a574644ab82b96b4dc0841b623371ec3032fa8",
-				"dweb:/ipfs/QmVTgqLRQogqnSUWuMRKBfSDBtFvKZCziA5wb7yGay5Xyb"
+				"bzz-raw://43116f43b2eb08b331198e9f8291feedd4a7ec9af9fc82a82cd804d56f1d5cf5",
+				"dweb:/ipfs/QmdWGPeNbc27UmqPykwzjBSBiScTvgaA8V9HnhWAZaThQ8"
 			]
 		}
 	},
