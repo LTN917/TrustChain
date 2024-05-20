@@ -1,6 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { connect } from 'amqplib';
 
+import { upto_blockchain } from '../../../../blockchain/upto_blockchain';
+
 // queue setting
 let connection:any;
 let channel:any;
@@ -15,10 +17,15 @@ let intervalId:NodeJS.Timeout;
 async function initRabbitMQ(){
   try{
     if(!connection){
-      connection = await connect('amqp://localhost:5276');
+      console.log('[system_connection-initRabbitMQ] Trying to connect and create channel...');
+      connection = await connect('amqp://localhost:5672').catch(e => console.log('[system_connection - initRabbitMQ] Connection failed:', e));
       channel = await connection.createChannel();
-      await channel.assertQueue(queue, {durable:true})
+      console.log('[system_connection-initRabbitMQ] connect and create channel [OK]');
+
+      await channel.assertQueue(queue, {durable:true});
       await startConsumer();
+      console.log('[system_connection-initRabbitMQ] queue and consumer setting done [OK]')
+
       intervalId=setInterval(adjustConsumers, 60000); // adjust consumers
     }
   }catch (err){
@@ -48,29 +55,21 @@ async function startConsumer(){
   try{
     const ConsumerChannel = await connection.createChannel();
     await ConsumerChannel.prefetch(1); // fair dispatch
+    console.log('[system_connection-startConsumer] consumer setting [OK]')
     await ConsumerChannel.consume(queue,(msg:any)=>{
       if(msg){
-        console.log('Received:', msg.content.toString());
-        api_upto_blockchain(msg.content.toString()); // API - processing after receiving the data
+        console.log('[system_connection-startConsumer] consumer received:', msg.content.toString());
+
+        console.log('[system_connection-startConsumer] data up to blockchain...');
+        upto_blockchain(msg.content.toString()); // blockchain/upto_blockchain
         ConsumerChannel.ack(msg);
       }
     });
   }catch(err){
-    console.log(`Fail to start consumer: ${err}`)
+    console.log(`[system_connection-startConsumer] Fail to start consumer: ${err}`)
   }
 }
 
-// API - processing after consumer receiving data
-import axios from 'axios';
-async function api_upto_blockchain(msgContent:string){
-  try{
-    const data = JSON.parse(msgContent);
-    const response = await axios.post('http://localhost:3000/api/blockchain/upto_blockchain',data);
-    console.log(`API Response: ${response}`) // return the result of processing
-  }catch(err){
-    console.log(`[API] Consumer Fail to use processing data API: ${err}`);
-  }
-}
 
 // adjust number of consumers
 async function adjustConsumers(){
@@ -80,15 +79,15 @@ async function adjustConsumers(){
       while (messageCount / consumer_number > 50 && consumer_number < max_consumer_number) {
         await startConsumer();
         consumer_number++;
-        console.log(`Increased consumers to ${consumer_number}`);
+        console.log(`[system_connection-adjustConsumers] Increased consumers to ${consumer_number}`);
       }
     } else if (consumer_number > 1 && messageCount / consumer_number < 20) {
       // Logic to reduce consumers if needed, ensuring at least one consumer remains
       consumer_number--;
-      console.log(`Decreased consumers to ${consumer_number}`);
+      console.log(`[system_connection-adjustConsumers] Decreased consumers to ${consumer_number}`);
     }
   } catch (err) {
-    console.log(`Fail to adjust Consumer: ${err}`);
+    console.log(`[system_connection-adjustConsumers] Fail to adjust Consumer: ${err}`);
   }
 }
 
@@ -99,16 +98,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   try{
     await initRabbitMQ();
     if (req.method === 'POST') {
-      // platform send data to queue
+      // platform send data to queue      
       await channel.sendToQueue(queue, Buffer.from(JSON.stringify(req.body)), { persistent: true });
-      console.log('Data sent to queue:', req.body);
+      console.log('[API-system_connection] Data sent to queue:', req.body);
       res.status(200).json({ message: 'platform dataset send to queue' });
     } else {
       res.setHeader('Allow', ['POST']);
-      res.status(405).end(`Method ${req.method} Not Allowed`);
+      res.status(405).end(`[API-system_connection] Method ${req.method} Not Allowed`);
     }
   }catch(err){
-    console.error(`[API] system_connection request failed: ${err}`);
+    console.error(`[API-system_connection] request failed: ${err}`);
     res.status(500).json({ error: 'Internal server error' });
   }finally{
     await finRabbitMQ();

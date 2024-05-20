@@ -5,7 +5,7 @@
 
 import Web3 from 'web3';
 
-export { roid_address_smart_contract_instance, deploy_ro_smartcontract, get_ro_contract_address, get_ro_smartcontract_contract_instance };
+export { web3, roid_address_smart_contract_instance, deploy_ro_smartcontract, get_ro_contract_address, get_ro_smartcontract_contract_instance };
 
 
 // creating Web3 instance to localhost Hardhat
@@ -471,7 +471,7 @@ const deploy_ro_smartcontract = async (RO_id_hashing : string) => {
             gasPrice: '900000000'
         });
     
-        console.log(`[deploy smart contract] roid_smartcontract deploy for "${RO_id_hashing}" at "${contract_instance.options.address}" [OK]`);
+        console.log(`[deploy_smart+contract] roid_smartcontract deploy for "${RO_id_hashing}" at "${contract_instance.options.address}" [OK]`);
     
         // add to roid_address
         const contarct_address = contract_instance.options.address;

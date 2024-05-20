@@ -23,10 +23,9 @@ async function get_vaultBX_wallet_address(ro_id_hashing : string){
 async function create_vault_wallet(ro_id_hashing : string){
     try{
         const vaultbx_wallet_address = await axios.post(`http://127.0.0.1:8200/v1/blockchain/accounts/${ro_id_hashing}/address`, ro_id_hashing);
-        console.log(`[API] vaultBX create wallet : ${vaultbx_wallet_address} [OK]`)
         return vaultbx_wallet_address;
     }catch(err){
-        console.log(`[API] vaultBX Fail to create vaultBX wallet: ${err}`);
+        console.log(`[vaultBX-create_vault_wallet] vaultBX Fail to create vaultBX wallet: ${err}`);
     }
 }
 
@@ -52,7 +51,6 @@ async function send_sign_tx(ro_id_hashing : string, tx: any){
                 }
             }
         );
-
         return sign_tx_response;
         /*
             {
@@ -75,19 +73,23 @@ async function send_sign_tx(ro_id_hashing : string, tx: any){
                 }
         */
     }catch(err){
-        console.log(`[API] vaultBX Fail to return sign_tx : ${err}`)
+        console.log(`[vaultBX - send_sign_tx] vaultBX Fail to return sign_tx : ${err}`)
     }
 }
 
 // API - return the sign_tx of verified valid RO
 async function get_sign_tx(ro_id_hashing : string, tx_type : string, tx_data : any){
 
+    console.log(`[vaultBX-get_sign_tx] ro '${ro_id_hashing}' sign for tx...`);
+
     // get or create RO vaultBX wallet address and smart contract address
     let ro_vaultbx_wallet_address = await get_vaultBX_wallet_address(ro_id_hashing);
+    console.log(`[vaultBX-get_sign_tx] get ro vault wallet : ${ro_vaultbx_wallet_address} [OK]`);
+
     let ro_contract_address = await get_ro_contract_address(ro_id_hashing);
+    console.log(`[vaultBX-get_sign_tx] get ro smart contract : ${ro_contract_address} [OK]`);
 
     // create sign_tx- execute contract methods
-
     let sign_tx = null;
     let signed_transaction = null;
 
@@ -108,6 +110,8 @@ async function get_sign_tx(ro_id_hashing : string, tx_type : string, tx_data : a
 
         sign_tx = await send_sign_tx(ro_id_hashing, tx)
         signed_transaction = sign_tx?.data.signed_transaction;
+
+        console.log(`[vaultBX-get_sign_tx] get sign_tx`)
         
     }else if(tx_type == 'verify_rp'){
 
