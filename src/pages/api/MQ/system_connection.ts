@@ -2,6 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import { connect } from 'amqplib';
 
 import { upto_blockchain } from '../../../../blockchain/upto_blockchain';
+import { deploy_roid_address } from '../../../../blockchain/ethereum_env';
 
 // queue setting
 let connection:any;
@@ -13,23 +14,46 @@ let consumer_number = 1;
 let max_consumer_number = 5;
 let intervalId:NodeJS.Timeout;
 
+// Entry
+type Entry = {
+  RO_id: string;
+  data_id: string;
+  data_auth : {
+    roles: string[];
+    goals: string[];
+  };
+}
+
+// raw data to Entry
+function formatEntry(data: any): Entry {
+  if (!data.RO_id || !data.data_id || !data.data_auth || !Array.isArray(data.data_auth.roles) || !Array.isArray(data.data_auth.goals)) {
+    throw new Error('Invalid data structure');
+  }
+
+  return {
+    RO_id: data.RO_id,
+    data_id: data.data_id,
+    data_auth: {
+      roles: data.data_auth.roles,
+      goals: data.data_auth.goals
+    }
+  };
+}
+
 // start RabbitMQ queue service
 async function initRabbitMQ(){
   try{
     if(!connection){
-      console.log('[system_connection-initRabbitMQ] Trying to connect and create channel...');
-      connection = await connect('amqp://localhost:5672').catch(e => console.log('[system_connection - initRabbitMQ] Connection failed:', e));
+      console.log('[initRabbitMQ] Trying to connect and create channel...');
+      connection = await connect('amqp://localhost:5672').catch(e => console.log('[initRabbitMQ] Connection failed:', e));
       channel = await connection.createChannel();
-      console.log('[system_connection-initRabbitMQ] connect and create channel [OK]');
+      console.log('[initRabbitMQ] connect and create channel [OK]');
 
       await channel.assertQueue(queue, {durable:true});
-      await startConsumer();
-      console.log('[system_connection-initRabbitMQ] queue and consumer setting done [OK]')
-
-      intervalId=setInterval(adjustConsumers, 60000); // adjust consumers
+      console.log(`[initRabbitMQ] assert queue ${queue} [OK]`);
     }
   }catch (err){
-    console.log(`Fail to init RabbitMQ: ${err}`)
+    console.log(`[initRabbitMQ] Fail to init : ${err}`)
   }
 }
 
@@ -53,20 +77,34 @@ async function finRabbitMQ(){
 // start a consumer 
 async function startConsumer(){
   try{
+    console.log('[startConsumer] consumer setting...');
     const ConsumerChannel = await connection.createChannel();
     await ConsumerChannel.prefetch(1); // fair dispatch
-    console.log('[system_connection-startConsumer] consumer setting [OK]')
+    console.log('[startConsumer] consumer setting [OK]');
     await ConsumerChannel.consume(queue,(msg:any)=>{
-      if(msg){
-        console.log('[system_connection-startConsumer] consumer received:', msg.content.toString());
-
-        console.log('[system_connection-startConsumer] data up to blockchain...');
-        upto_blockchain(msg.content.toString()); // blockchain/upto_blockchain
-        ConsumerChannel.ack(msg);
+      try {
+        if(msg){
+          if (msg) {
+            const entryContent = msg.content.toString();
+            const entryData: Entry = JSON.parse(entryContent); // Ensure this conversion is valid
+            console.log(`[Consumer] consumer received: ${entryData}`);
+            console.log('[Consumer] data up to blockchain...');
+            upto_blockchain(entryData);
+            ConsumerChannel.ack(msg);
+          }
+        }
+      } catch (error) {
+        console.error('[Consumer] fail to receiving data and retry...', error);
+        if (msg.properties.headers['x-death'].count < 5) {
+          ConsumerChannel.nack(msg, false, true);  // re-send data to queue
+        }else{
+          ConsumerChannel.nack(msg, false, false); // dicard data
+          console.log('[Consumer] fail to receive and discard data:', msg.content.toString());
+        }
       }
     });
   }catch(err){
-    console.log(`[system_connection-startConsumer] Fail to start consumer: ${err}`)
+    console.log(`[startConsumer] Fail to start: ${err}`)
   }
 }
 
@@ -79,15 +117,15 @@ async function adjustConsumers(){
       while (messageCount / consumer_number > 50 && consumer_number < max_consumer_number) {
         await startConsumer();
         consumer_number++;
-        console.log(`[system_connection-adjustConsumers] Increased consumers to ${consumer_number}`);
+        console.log(`[adjustConsumers] Increased consumers to ${consumer_number}`);
       }
     } else if (consumer_number > 1 && messageCount / consumer_number < 20) {
       // Logic to reduce consumers if needed, ensuring at least one consumer remains
       consumer_number--;
-      console.log(`[system_connection-adjustConsumers] Decreased consumers to ${consumer_number}`);
+      console.log(`[adjustConsumers] Decreased consumers to ${consumer_number}`);
     }
   } catch (err) {
-    console.log(`[system_connection-adjustConsumers] Fail to adjust Consumer: ${err}`);
+    console.log(`[adjustConsumers] Fail to adjust: ${err}`);
   }
 }
 
@@ -96,11 +134,20 @@ async function adjustConsumers(){
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
 
   try{
-    await initRabbitMQ();
     if (req.method === 'POST') {
-      // platform send data to queue      
-      await channel.sendToQueue(queue, Buffer.from(JSON.stringify(req.body)), { persistent: true });
-      console.log('[API-system_connection] Data sent to queue:', req.body);
+      console.log(`============================= [Trust Chain] start connect ${"test_platform"} =============================`)
+      // init roid_address smart contract
+      await deploy_roid_address("test_platform");
+      // init rabbitMQ setting
+      await initRabbitMQ();
+      await startConsumer();
+      intervalId=setInterval(adjustConsumers, 60000); // adjust consumers
+      // platform send data to queue
+      for (const raw_entry of req.body) {
+        let entry = formatEntry(raw_entry);
+        await channel.sendToQueue(queue, Buffer.from(JSON.stringify(entry)), { persistent: true });
+        console.log('[API-system_connection] Data sent to queue:', entry);
+      }      
       res.status(200).json({ message: 'platform dataset send to queue' });
     } else {
       res.setHeader('Allow', ['POST']);
