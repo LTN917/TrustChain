@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { web3, roid_address_smart_contract_instance, deploy_ro_smartcontract, get_ro_smartcontract_contract_instance } from './ethereum_env';
+import { web3, roid_address_smart_contract_instance, deploy_ro_smartcontract, get_ro_smart_contract_instance } from './ethereum_env';
 import { get_sign_tx } from '../vautlBX/methods';
 import crypto from 'crypto';
 
@@ -40,12 +40,12 @@ const dataHashing = async (entry:Entry) => {
       },
     }
 
-    console.log("[upto_blockchain - dataHashing] dataHashing [OK]");
+    console.log("[dataHashing] Hashing [OK]");
 
     return entry_hashing;
 }
 
-// ================================== upto_blockchain API ================================== 
+// ================================== upto_blockchain ================================== 
 export default async function upto_blockchain(entry : Entry) {
   try{
     // hashing req entry

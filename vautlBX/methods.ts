@@ -1,36 +1,47 @@
 
 import axios from 'axios';
 
-import { web3, roid_address_smart_contract_instance, deploy_ro_smartcontract, get_ro_contract_address, get_ro_smartcontract_contract_instance } from '../blockchain/ethereum_env';
+import { web3, roid_address_smart_contract_instance, deploy_ro_smartcontract, get_ro_contract_address, get_ro_smart_contract_instance } from '../blockchain/ethereum_env';
 
-export { get_sign_tx}
+export { get_sign_tx }
 
 
 // get vaultBX wallet address
 async function get_vaultBX_wallet_address(ro_id_hashing : string){
-    let ro_vaultbx_wallet_address = (await roid_address_smart_contract_instance).methods.getSmartContract(ro_id_hashing);
-
-    if(ro_vaultbx_wallet_address == "0x0000000000000000000000000000000000000000"){
-        ro_vaultbx_wallet_address = await create_vault_wallet(ro_id_hashing);
-        (await roid_address_smart_contract_instance).methods.setVaultBX(ro_id_hashing, ro_vaultbx_wallet_address);
-    }
-    
-    return ro_vaultbx_wallet_address;
+    try{
+        let ro_vaultbx_wallet_address = await (await roid_address_smart_contract_instance).methods.getSmartContract(ro_id_hashing).call();
+        if(ro_vaultbx_wallet_address == "0x0000000000000000000000000000000000000000"){
+            ro_vaultbx_wallet_address = await create_vault_wallet(ro_id_hashing);
+            (await roid_address_smart_contract_instance).methods.setVaultBX(ro_id_hashing, ro_vaultbx_wallet_address).send();
+        }
+        return ro_vaultbx_wallet_address;
+    }catch(err){
+        console.error('[get_vaultBX_wallet_address] Failed to fetch the address:', err);
+    }    
 }
 
 
 // vaultBX API - create vaultBX wallet
 async function create_vault_wallet(ro_id_hashing : string){
     try{
-        const vaultbx_wallet_address = await axios.post(`http://127.0.0.1:8200/v1/blockchain/accounts/${ro_id_hashing}/address`, ro_id_hashing);
-        return vaultbx_wallet_address;
+        console.log('[vaultBX-API] create vault wallet for RO...');
+        const res = await axios.post(`http://127.0.0.1:8200/v1/blockchain/accounts/${ro_id_hashing}/address`, {}, {
+            headers: {
+                "X-Vault-Token":"root",
+            },
+        });
+
+        let vaultBX_wallet_address = res.data.data.address;
+
+        console.log(`[vaultBX-API] create vaultBX wallet: ${vaultBX_wallet_address} [OK]`);
+        return vaultBX_wallet_address;
     }catch(err){
-        console.log(`[vaultBX-create_vault_wallet] vaultBX Fail to create vaultBX wallet: ${err}`);
+        console.log(`[vaultBX-API] Fail to create vaultBX wallet: ${err}`);
     }
 }
 
 // vaultBX API - sign_tx
-async function send_sign_tx(ro_id_hashing : string, tx: any){
+async function send_sign_tx(ro_id_hashing : string, tx : any){
 
     try{
         const sign_tx_response = await axios.post(`http://127.0.0.1:8200/v1/blockchain/accounts/${ro_id_hashing}/sign-tx`,
@@ -94,7 +105,7 @@ async function get_sign_tx(ro_id_hashing : string, tx_type : string, tx_data : a
     let signed_transaction = null;
 
     if (tx_type == 'data_up_to_blockchain'){
-        const data = await (await get_ro_smartcontract_contract_instance(ro_contract_address))
+        const data = await (await get_ro_smart_contract_instance(ro_contract_address))
                         .methods.set_data_auth(tx_data[0], tx_data[1]).encodeABI();
         const tx = {
             address_from : process.env.PUBLIC_WALLET_ADDR,

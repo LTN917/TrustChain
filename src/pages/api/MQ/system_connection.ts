@@ -84,14 +84,12 @@ async function startConsumer(){
     await ConsumerChannel.consume(queue,(msg:any)=>{
       try {
         if(msg){
-          if (msg) {
-            const entryContent = msg.content.toString();
-            const entryData: Entry = JSON.parse(entryContent); // Ensure this conversion is valid
-            console.log(`[Consumer] consumer received: ${entryData}`);
-            console.log('[Consumer] data up to blockchain...');
-            upto_blockchain(entryData);
-            ConsumerChannel.ack(msg);
-          }
+          const entryContent = msg.content.toString();
+          const entryData: Entry = JSON.parse(entryContent); // Ensure this conversion is valid
+          console.log('[Consumer] consumer received: ', entryData);
+          console.log('[Consumer] data up to blockchain...');
+          upto_blockchain(entryData);
+          ConsumerChannel.ack(msg);
         }
       } catch (error) {
         console.error('[Consumer] fail to receiving data and retry...', error);

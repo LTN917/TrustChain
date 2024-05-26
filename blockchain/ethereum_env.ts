@@ -5,7 +5,7 @@
 
 import Web3 from 'web3';
 
-export { web3, roid_address_smart_contract_instance, deploy_ro_smartcontract, get_ro_contract_address, get_ro_smartcontract_contract_instance, deploy_roid_address };
+export { web3, roid_address_smart_contract_instance, deploy_ro_smartcontract, get_ro_contract_address, get_ro_smart_contract_instance, deploy_roid_address };
 
 
 // creating Web3 instance to localhost Hardhat
@@ -181,6 +181,8 @@ const roid_address_abi = [
 
 const roid_address_bytecode ="608060405234801561000f575f80fd5b50335f73ffffffffffffffffffffffffffffffffffffffff168173ffffffffffffffffffffffffffffffffffffffff1603610081575f6040517f1e4fbdf70000000000000000000000000000000000000000000000000000000081526004016100789190610196565b60405180910390fd5b6100908161009660201b60201c565b506101af565b5f805f9054906101000a900473ffffffffffffffffffffffffffffffffffffffff169050815f806101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff1602179055508173ffffffffffffffffffffffffffffffffffffffff168173ffffffffffffffffffffffffffffffffffffffff167f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e060405160405180910390a35050565b5f73ffffffffffffffffffffffffffffffffffffffff82169050919050565b5f61018082610157565b9050919050565b61019081610176565b82525050565b5f6020820190506101a95f830184610187565b92915050565b610881806101bc5f395ff3fe608060405234801561000f575f80fd5b506004361061007b575f3560e01c8063715018a611610059578063715018a6146100fb5780638da5cb5b14610105578063c6c4fbc614610123578063f2fde38b1461013f5761007b565b806340763c3e1461007f5780634986b388146100af578063648451a8146100df575b5f80fd5b61009960048036038101906100949190610648565b61015b565b6040516100a691906106ce565b60405180910390f35b6100c960048036038101906100c49190610711565b6101a9565b6040516100d69190610785565b60405180910390f35b6100f960048036038101906100f49190610711565b61021e565b005b610103610286565b005b61010d610299565b60405161011a91906106ce565b60405180910390f35b61013d60048036038101906101389190610711565b6102c0565b005b6101596004803603810190610154919061079e565b610328565b005b5f6101646103ac565b6002826040516101749190610835565b90815260200160405180910390205f9054906101000a900473ffffffffffffffffffffffffffffffffffffffff169050919050565b5f8173ffffffffffffffffffffffffffffffffffffffff166001846040516101d19190610835565b90815260200160405180910390205f9054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1614905092915050565b6102266103ac565b806001836040516102379190610835565b90815260200160405180910390205f6101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff1602179055505050565b61028e6103ac565b6102975f610433565b565b5f805f9054906101000a900473ffffffffffffffffffffffffffffffffffffffff16905090565b6102c86103ac565b806002836040516102d99190610835565b90815260200160405180910390205f6101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff1602179055505050565b6103306103ac565b5f73ffffffffffffffffffffffffffffffffffffffff168173ffffffffffffffffffffffffffffffffffffffff16036103a0575f6040517f1e4fbdf700000000000000000000000000000000000000000000000000000000815260040161039791906106ce565b60405180910390fd5b6103a981610433565b50565b6103b46104f4565b73ffffffffffffffffffffffffffffffffffffffff166103d2610299565b73ffffffffffffffffffffffffffffffffffffffff1614610431576103f56104f4565b6040517f118cdaa700000000000000000000000000000000000000000000000000000000815260040161042891906106ce565b60405180910390fd5b565b5f805f9054906101000a900473ffffffffffffffffffffffffffffffffffffffff169050815f806101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff1602179055508173ffffffffffffffffffffffffffffffffffffffff168173ffffffffffffffffffffffffffffffffffffffff167f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e060405160405180910390a35050565b5f33905090565b5f604051905090565b5f80fd5b5f80fd5b5f80fd5b5f80fd5b5f601f19601f8301169050919050565b7f4e487b71000000000000000000000000000000000000000000000000000000005f52604160045260245ffd5b61055a82610514565b810181811067ffffffffffffffff8211171561057957610578610524565b5b80604052505050565b5f61058b6104fb565b90506105978282610551565b919050565b5f67ffffffffffffffff8211156105b6576105b5610524565b5b6105bf82610514565b9050602081019050919050565b828183375f83830152505050565b5f6105ec6105e78461059c565b610582565b90508281526020810184848401111561060857610607610510565b5b6106138482856105cc565b509392505050565b5f82601f83011261062f5761062e61050c565b5b813561063f8482602086016105da565b91505092915050565b5f6020828403121561065d5761065c610504565b5b5f82013567ffffffffffffffff81111561067a57610679610508565b5b6106868482850161061b565b91505092915050565b5f73ffffffffffffffffffffffffffffffffffffffff82169050919050565b5f6106b88261068f565b9050919050565b6106c8816106ae565b82525050565b5f6020820190506106e15f8301846106bf565b92915050565b6106f0816106ae565b81146106fa575f80fd5b50565b5f8135905061070b816106e7565b92915050565b5f806040838503121561072757610726610504565b5b5f83013567ffffffffffffffff81111561074457610743610508565b5b6107508582860161061b565b9250506020610761858286016106fd565b9150509250929050565b5f8115159050919050565b61077f8161076b565b82525050565b5f6020820190506107985f830184610776565b92915050565b5f602082840312156107b3576107b2610504565b5b5f6107c0848285016106fd565b91505092915050565b5f81519050919050565b5f81905092915050565b5f5b838110156107fa5780820151818401526020810190506107df565b5f8484015250505050565b5f61080f826107c9565b61081981856107d3565b93506108298185602086016107dd565b80840191505092915050565b5f6108408284610805565b91508190509291505056fea2646970667358221220517f086023bd659bbece3b63987eb5c26b0dede95e729bc327c30508f5cdee4664736f6c63430008180033";
 
+let roid_address_smart_contract_instance : any;
+
 const deploy_roid_address = async (platform_name : string) => {
 
     try{
@@ -196,6 +198,9 @@ const deploy_roid_address = async (platform_name : string) => {
             gas: 5000000,      // 增加 gas 限制
             gasPrice: '900000000'    
         });
+
+        roid_address_smart_contract_instance = new web3.eth.Contract(roid_address_abi as any, contract_instance.options.address);
+
         console.log(`[deploy smart contract] roid_address deploy for '${platform_name}' at : ${contract_instance.options.address} [OK]`);
 
         return contract_instance.options.address;
@@ -203,8 +208,6 @@ const deploy_roid_address = async (platform_name : string) => {
         console.log(`[deploy smart contract] roid_address error : ${err}`);
     }
 }
-
-const roid_address_smart_contract_instance = new web3.eth.Contract(roid_address_abi as any);
 
 // ================================ smart contract - ro_smartcontract  =================================================
 const ro_smartcontract_abi = [
@@ -455,9 +458,10 @@ const ro_smartcontract_bytecode = "608060405234801562000010575f80fd5b50604051620
 
 const deploy_ro_smartcontract = async (RO_id_hashing : string) => {
 
-    const public_wallet = await get_public_wallet();
-
     try{
+        const public_wallet = await get_public_wallet();
+        console.log('[test]', public_wallet);
+
         // deploy
         const contract = new web3.eth.Contract(ro_smartcontract_abi as any);
         const contract_instance = await contract.deploy({
@@ -469,8 +473,8 @@ const deploy_ro_smartcontract = async (RO_id_hashing : string) => {
             gas: 3000000,
             gasPrice: '900000000'
         });
-    
-        console.log(`[deploy_smart+contract] roid_smartcontract deploy for "${RO_id_hashing}" at "${contract_instance.options.address}" [OK]`);
+
+        console.log(`[deploy_smart_contract] roid_smartcontract deploy for "${RO_id_hashing}" at "${contract_instance.options.address}" [OK]`);
     
         // add to roid_address
         const contarct_address = contract_instance.options.address;
@@ -486,16 +490,16 @@ const deploy_ro_smartcontract = async (RO_id_hashing : string) => {
 }
 
 const get_ro_contract_address = async (ro_id_hashing : string) => {
-    let ro_contract_address = (await roid_address_smart_contract_instance).methods.getSmartContract(ro_id_hashing);
+    let ro_contract_address = await (await roid_address_smart_contract_instance).methods.getSmartContract(ro_id_hashing).call();
 
     if(ro_id_hashing == "0x0000000000000000000000000000000000000000"){
-        ro_contract_address = await deploy_ro_smartcontract(ro_id_hashing)
+        ro_contract_address = await deploy_ro_smartcontract(ro_id_hashing);
     }
 
     return ro_contract_address;
 }
 
-const get_ro_smartcontract_contract_instance = async ( contract_address : string ) => {
+const get_ro_smart_contract_instance = async ( contract_address : string ) => {
     const ro_smartcontract_smart_contract_instance = new web3.eth.Contract(ro_smartcontract_abi as any, contract_address);
     return ro_smartcontract_smart_contract_instance;
 }
