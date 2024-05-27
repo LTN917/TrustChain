@@ -33,7 +33,19 @@ async function create_vault_wallet(ro_id_hashing : string){
 
         let vaultBX_wallet_address = res.data.data.address;
 
-        console.log(`[vaultBX-API] create vaultBX wallet: ${vaultBX_wallet_address} [OK]`);
+        // public wallet top up the vaultBX wallet
+        const public_wallet_privatekey = process.env.PUBLIC_WALLET_PRIVATE_ADDR as string;
+        const signedTx = await web3.eth.accounts.signTransaction({
+            to: vaultBX_wallet_address,
+            value: web3.utils.toWei('10', 'ether'),
+            gas: 21000, // The gas limit for standard transactions
+            gasPrice: await web3.eth.getGasPrice() // Gets the current gas price
+        }, public_wallet_privatekey);
+
+        console.log(`[test] The balance : ${await web3.eth.getBalance(vaultBX_wallet_address)} wei`, signedTx);
+
+        console.log(`[vaultBX-API] create and top up vaultBX wallet: ${vaultBX_wallet_address} [OK]`);
+
         return vaultBX_wallet_address;
     }catch(err){
         console.log(`[vaultBX-API] Fail to create vaultBX wallet: ${err}`);
@@ -62,6 +74,7 @@ async function send_sign_tx(ro_id_hashing : string, tx : any){
                 }
             }
         );
+        console.log('[vaultBX - send_sign_tx] done');
         return sign_tx_response;
         /*
             {
@@ -105,13 +118,14 @@ async function get_sign_tx(ro_id_hashing : string, tx_type : string, tx_data : a
         let sign_tx = null;
         let signed_transaction = null;
 
+
         if (tx_type == 'data_up_to_blockchain'){
             const data = await (await get_ro_smart_contract_instance(ro_contract_address))
                         .methods.set_data_auth(tx_data[0], tx_data[1]).encodeABI();
             const tx = {
-                address_from : process.env.PUBLIC_WALLET_ADDR,
+                address_from : ro_vaultbx_wallet_address,
                 address_to : ro_contract_address,
-                chainID : "31337", 
+                chainID : "1337", 
                 amount : "10",  
                 gas_price : await web3.eth.getGasPrice(),  
                 gas_limit : await web3.eth.estimateGas({ to: ro_contract_address, data: data }),  
@@ -122,7 +136,6 @@ async function get_sign_tx(ro_id_hashing : string, tx_type : string, tx_data : a
 
             sign_tx = await send_sign_tx(ro_id_hashing, tx)
             signed_transaction = sign_tx?.data.data.signed_transaction;
-
             console.log('[vaultBX-get_sign_tx] get sign_tx :', signed_transaction);
         
         }else if(tx_type == 'verify_rp'){
