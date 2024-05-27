@@ -100,33 +100,37 @@ async function get_sign_tx(ro_id_hashing : string, tx_type : string, tx_data : a
     let ro_contract_address = await get_ro_contract_address(ro_id_hashing);
     console.log(`[vaultBX-get_sign_tx] get ro smart contract : ${ro_contract_address} [OK]`);
 
-    // create sign_tx- execute contract methods
-    let sign_tx = null;
-    let signed_transaction = null;
+    try{
+        // create sign_tx- execute contract methods
+        let sign_tx = null;
+        let signed_transaction = null;
 
-    if (tx_type == 'data_up_to_blockchain'){
-        const data = await (await get_ro_smart_contract_instance(ro_contract_address))
+        if (tx_type == 'data_up_to_blockchain'){
+            const data = await (await get_ro_smart_contract_instance(ro_contract_address))
                         .methods.set_data_auth(tx_data[0], tx_data[1]).encodeABI();
-        const tx = {
-            address_from : process.env.PUBLIC_WALLET_ADDR,
-            address_to : ro_contract_address,
-            chainID : "31337", 
-            amount : "10",  
-            gas_price : await web3.eth.getGasPrice(),  
-            gas_limit : await web3.eth.estimateGas({ to: ro_contract_address, data: data }),  
-            nonce : await web3.eth.getTransactionCount(ro_vaultbx_wallet_address, 'latest'),  
-            data : data,  
-            is_private : false 
-        };
+            const tx = {
+                address_from : process.env.PUBLIC_WALLET_ADDR,
+                address_to : ro_contract_address,
+                chainID : "31337", 
+                amount : "10",  
+                gas_price : await web3.eth.getGasPrice(),  
+                gas_limit : await web3.eth.estimateGas({ to: ro_contract_address, data: data }),  
+                nonce : await web3.eth.getTransactionCount(ro_vaultbx_wallet_address, 'latest'),  
+                data : data,  
+                is_private : false 
+            };
 
-        sign_tx = await send_sign_tx(ro_id_hashing, tx)
-        signed_transaction = sign_tx?.data.signed_transaction;
+            sign_tx = await send_sign_tx(ro_id_hashing, tx)
+            signed_transaction = sign_tx?.data.data.signed_transaction;
 
-        console.log(`[vaultBX-get_sign_tx] get sign_tx`)
+            console.log('[vaultBX-get_sign_tx] get sign_tx :', signed_transaction);
         
-    }else if(tx_type == 'verify_rp'){
+        }else if(tx_type == 'verify_rp'){
 
+        }
+
+        return (signed_transaction != null) ? signed_transaction : "null";
+    }catch(err){
+        console.log(`[vaultBX-get_sign_tx] execute contract methods failed: ${err}`);
     }
-
-    return (signed_transaction == null) ? signed_transaction : "null";
 }

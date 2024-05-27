@@ -53,19 +53,17 @@ export default async function upto_blockchain(entry : Entry) {
 
     // return sign_tx of RO
     const signed_transaction = await get_sign_tx(entry_hashing.RO_id_hash, "data_up_to_blockchain", [entry_hashing.data_id_hash, entry_hashing.data_auth_hash]);
-
     // up entry hashing to blockchain
     if(signed_transaction){
       try {
         const receipt = await web3.eth.sendSignedTransaction(signed_transaction);
-        console.log('[upto_blockchain] Transaction sent! Receipt:', receipt);
-    } catch (error) {
+        console.log('[upto_blockchain] Transaction sent tx_receipt:', receipt);
+        console.log(`[upto_blockchain] data up to blockchain for data : ${entry_hashing.data_id_hash} [OK]`);
+      } catch (error) {
         console.error('[upto_blockchain] Failed to send sign_tx_by_vaultBX:', error);
+      }
     }
-      console.log(`[upto_blockchain] data up to blockchain for data : ${entry_hashing.data_id_hash} [OK]`);
-    }
-    console.log("[upto_blockchain] entry up to blockchain Failed!");
   }catch (err){
-    console.error(`[upto_blockchain] upto_blockchain request failed: ${err}`);
+    console.error(`[upto_blockchain] entry up to blockchain failed: ${err}`);
   }
 }

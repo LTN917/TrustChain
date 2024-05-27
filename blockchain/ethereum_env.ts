@@ -460,7 +460,6 @@ const deploy_ro_smartcontract = async (RO_id_hashing : string) => {
 
     try{
         const public_wallet = await get_public_wallet();
-        console.log('[test]', public_wallet);
 
         // deploy
         const contract = new web3.eth.Contract(ro_smartcontract_abi as any);
@@ -492,7 +491,7 @@ const deploy_ro_smartcontract = async (RO_id_hashing : string) => {
 const get_ro_contract_address = async (ro_id_hashing : string) => {
     let ro_contract_address = await (await roid_address_smart_contract_instance).methods.getSmartContract(ro_id_hashing).call();
 
-    if(ro_id_hashing == "0x0000000000000000000000000000000000000000"){
+    if(ro_contract_address == "0x0000000000000000000000000000000000000000"){
         ro_contract_address = await deploy_ro_smartcontract(ro_id_hashing);
     }
 
