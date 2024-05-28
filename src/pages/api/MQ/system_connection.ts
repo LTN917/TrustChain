@@ -144,7 +144,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       for (const raw_entry of req.body) {
         let entry = formatEntry(raw_entry);
         await channel.sendToQueue(queue, Buffer.from(JSON.stringify(entry)), { persistent: true });
-        console.log('[API-system_connection] Data sent to queue:', entry);
       }      
       res.status(200).json({ message: 'platform dataset send to queue' });
     } else {

@@ -41,8 +41,7 @@ async function create_vault_wallet(ro_id_hashing : string){
             gas: 21000, // The gas limit for standard transactions
             gasPrice: await web3.eth.getGasPrice() // Gets the current gas price
         }, public_wallet_privatekey);
-
-        console.log(`[test] The balance : ${await web3.eth.getBalance(vaultBX_wallet_address)} wei`, signedTx);
+        const sendResult = await web3.eth.sendSignedTransaction(signedTx.rawTransaction as string);
 
         console.log(`[vaultBX-API] create and top up vaultBX wallet: ${vaultBX_wallet_address} [OK]`);
 
@@ -58,8 +57,8 @@ async function send_sign_tx(ro_id_hashing : string, tx : any){
     try{
         const sign_tx_response = await axios.post(`http://127.0.0.1:8200/v1/blockchain/accounts/${ro_id_hashing}/sign-tx`,
             {
-                "address_from" : tx.ro_vaultbx_wallet_address,
-                "address_to" : tx.ro_contract_address,
+                "address_from" : tx.address_from,
+                "address_to" : tx.address_to,
                 "chainID" : tx.chainID, 
                 "amount" : tx.amount,  
                 "gas_price" : tx.gas_price,  
