@@ -81,23 +81,23 @@ async function startConsumer(){
     const ConsumerChannel = await connection.createChannel();
     await ConsumerChannel.prefetch(1); // fair dispatch
     console.log('[startConsumer] consumer setting [OK]');
-    await ConsumerChannel.consume(queue,(msg:any)=>{
-      try {
-        if(msg){
-          const entryContent = msg.content.toString();
-          const entryData: Entry = JSON.parse(entryContent); // Ensure this conversion is valid
-          console.log('[Consumer] consumer received: ', entryData);
-          console.log('[Consumer] data up to blockchain...');
-          upto_blockchain(entryData);
+
+    // consuming data from queue
+    await ConsumerChannel.consume(queue, async(msg:any)=>{
+      if(msg){
+        const entryContent = msg.content.toString();
+        const entryData : Entry = JSON.parse(entryContent);
+        console.log('[Consumer] consumer received: ', entryData);
+        console.log('[Consumer] data up to blockchain...');
+
+        try{
+          await upto_blockchain(entryData);
+          console.log('[Consumer] Ready to receive the next message...');
           ConsumerChannel.ack(msg);
-        }
-      } catch (error) {
-        console.error('[Consumer] fail to receiving data and retry...', error);
-        if (msg.properties.headers['x-death'].count < 5) {
-          ConsumerChannel.nack(msg, false, true);  // re-send data to queue
-        }else{
-          ConsumerChannel.nack(msg, false, false); // dicard data
-          console.log('[Consumer] fail to receive and discard data:', msg.content.toString());
+          await new Promise(resolve => setTimeout(resolve, 10000)); // time buffer
+        }catch(err){
+          console.error('[Consumer] fail to receiving data and retry...', err);
+          ConsumerChannel.nack(msg, false, true); // Re-send data to queue
         }
       }
     });
