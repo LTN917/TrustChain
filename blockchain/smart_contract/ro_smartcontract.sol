@@ -41,7 +41,7 @@ contract RO_smart_contract is Ownable, Initializable {
     // 合约初始化方法
     function initialize(string memory _RO_id_hashing) public initializer {
         RO_id_hashing = _RO_id_hashing;
-        transferOwnership(msg.sender);  // 将合约所有者设置为部署者
+        transferOwnership(msg.sender);  // 将合约所有者设置為部署者
     }
 
     // 修改或新增數據驗證

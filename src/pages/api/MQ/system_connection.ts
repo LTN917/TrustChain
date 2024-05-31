@@ -13,6 +13,7 @@ let queue = 'platform_data_queue';
 let consumer_number = 1;
 let max_consumer_number = 5;
 let intervalId:NodeJS.Timeout;
+let activeTasks = 0; 
 
 // Entry
 type Entry = {
@@ -57,21 +58,16 @@ async function initRabbitMQ(){
   }
 }
 
-// finish RabbitMQ queue service
-async function finRabbitMQ(){
-  clearInterval(intervalId);
-  try {
-    if (channel) {
-      await channel.close();
-      channel = null;  // Nullify the global reference
-    }
-    if (connection) {
-      await connection.close();
-      connection = null;  // Nullify the global reference
-    }
-  }catch(err){
-    console.log(`Fail to close RabbitMQ: ${err}`)
+// close RabbitMQ and queue service
+async function closeRabbitMQ() {
+  while (activeTasks > 0) {
+    await new Promise(resolve => setTimeout(resolve, 1000));
   }
+  // adjustConsumer
+  clearInterval(intervalId);
+  // no active task and close 
+  await channel.close();
+  await connection.close();
 }
 
 // start a consumer 
@@ -79,11 +75,12 @@ async function startConsumer(){
   try{
     console.log('[startConsumer] consumer setting...');
     const ConsumerChannel = await connection.createChannel();
-    await ConsumerChannel.prefetch(1); // fair dispatch
+    await ConsumerChannel.prefetch(1); // consumer fetch 1 data once
     console.log('[startConsumer] consumer setting [OK]');
 
     // consuming data from queue
     await ConsumerChannel.consume(queue, async(msg:any)=>{
+      activeTasks++;
       if(msg){
         const entryContent = msg.content.toString();
         const entryData : Entry = JSON.parse(entryContent);
@@ -92,12 +89,13 @@ async function startConsumer(){
 
         try{
           await upto_blockchain(entryData);
-          console.log('[Consumer] Ready to receive the next message...');
           ConsumerChannel.ack(msg);
           await new Promise(resolve => setTimeout(resolve, 10000)); // time buffer
         }catch(err){
           console.error('[Consumer] fail to receiving data and retry...', err);
           ConsumerChannel.nack(msg, false, true); // Re-send data to queue
+        }finally{
+          activeTasks--;
         }
       }
     });
@@ -128,6 +126,7 @@ async function adjustConsumers(){
 }
 
 
+
 //  ================================== system_connection API  ================================== 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
 
@@ -145,7 +144,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         let entry = formatEntry(raw_entry);
         await channel.sendToQueue(queue, Buffer.from(JSON.stringify(entry)), { persistent: true });
       }      
-      res.status(200).json({ message: 'platform dataset send to queue' });
+      await new Promise(resolve => setTimeout(resolve, 10000)); // Delay to process messages
+
+      res.status(200).json({ message: 'Finished processing all messages.' });
+
     } else {
       res.setHeader('Allow', ['POST']);
       res.status(405).end(`[API-system_connection] Method ${req.method} Not Allowed`);
@@ -154,6 +156,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     console.error(`[API-system_connection] request failed: ${err}`);
     res.status(500).json({ error: 'Internal server error' });
   }finally{
-    await finRabbitMQ();
+    await closeRabbitMQ();
   }
 }

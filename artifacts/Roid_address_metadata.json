@@ -1,6 +1,6 @@
 {
 	"compiler": {
-		"version": "0.8.24+commit.e11b9ed9"
+		"version": "0.8.20+commit.a1b79de6"
 	},
 	"language": "Solidity",
 	"output": {
@@ -60,6 +60,25 @@
 					}
 				],
 				"name": "getSmartContract",
+				"outputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "string",
+						"name": "roid_hashing",
+						"type": "string"
+					}
+				],
+				"name": "getVaultBX",
 				"outputs": [
 					{
 						"internalType": "address",
@@ -230,11 +249,11 @@
 			]
 		},
 		"blockchain\\smart_contract\\roid_address.sol": {
-			"keccak256": "0x9093956215c7875b50d3ab350f56ab37062cb07591717f51636ae0f16b437585",
+			"keccak256": "0x0158ba0381b5368ea76292676c38c1ace40c9ee4bcf10d713160917e69aff8e6",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://d32d7ccc4775c02b98315e46fe01af93ed78ec47689082333fb9ad70cd0f4e5d",
-				"dweb:/ipfs/Qmc4GXb52oDo1q8fVZRTqFvaZBtDbSiTEiMSqCp8nwv9Lj"
+				"bzz-raw://290c7233e27cff47c5e4916f4b509946866889368910c3f0ebcc6b92f2ad36dc",
+				"dweb:/ipfs/QmZKPVA9anyiQtNFM8aAoExkAJc6WnUXqmBQwEwYgKEAEP"
 			]
 		}
 	},

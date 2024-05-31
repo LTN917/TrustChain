@@ -33,6 +33,11 @@ contract Roid_address is Ownable {
     }
 
     // Function to retrieve the smart contract address associated with a given roid
+    function getVaultBX(string memory roid_hashing) public onlyOwner view returns (address) {
+        return roidVaultBX[roid_hashing];
+    }
+
+    // Function to retrieve the smart contract address associated with a given roid
     function getSmartContract(string memory roid_hashing) public onlyOwner view returns (address) {
         return roidSmartContract[roid_hashing];
     }

@@ -1,18 +1,21 @@
 
 import axios from 'axios';
 
-import { web3, roid_address_smart_contract_instance, deploy_ro_smartcontract, get_ro_contract_address, get_ro_smart_contract_instance } from '../blockchain/ethereum_env';
+import { web3, roid_address_smart_contract_instance, deploy_ro_smartcontract, get_ro_contract_address, get_ro_smart_contract_instance, get_public_wallet } from '../blockchain/ethereum_env';
 
-export { get_sign_tx }
+export { get_sign_tx,  send_sign_tx }
 
 
 // get vaultBX wallet address
 async function get_vaultBX_wallet_address(ro_id_hashing : string){
     try{
+
+        const public_wallet = await get_public_wallet();
+
         let ro_vaultbx_wallet_address = await (await roid_address_smart_contract_instance).methods.getSmartContract(ro_id_hashing).call();
         if(ro_vaultbx_wallet_address == "0x0000000000000000000000000000000000000000"){
             ro_vaultbx_wallet_address = await create_vault_wallet(ro_id_hashing);
-            (await roid_address_smart_contract_instance).methods.setVaultBX(ro_id_hashing, ro_vaultbx_wallet_address).send();
+            await (await roid_address_smart_contract_instance).methods.setVaultBX(ro_id_hashing, ro_vaultbx_wallet_address).send({ from: public_wallet });
         }
         return ro_vaultbx_wallet_address;
     }catch(err){
@@ -41,9 +44,11 @@ async function create_vault_wallet(ro_id_hashing : string){
             gas: 21000, // The gas limit for standard transactions
             gasPrice: await web3.eth.getGasPrice() // Gets the current gas price
         }, public_wallet_privatekey);
-        const sendResult = await web3.eth.sendSignedTransaction(signedTx.rawTransaction as string);
+        await web3.eth.sendSignedTransaction(signedTx.rawTransaction as string);
 
-        console.log(`[vaultBX-API] create and top up vaultBX wallet: ${vaultBX_wallet_address} [OK]`);
+        const balanceWei = await web3.eth.getBalance(vaultBX_wallet_address);
+        const balanceEth = web3.utils.fromWei(balanceWei, 'ether');
+        console.log(`[vaultBX-API] create and top up vaultBX wallet: ${vaultBX_wallet_address}, ${balanceEth} ETH [OK]`);
 
         return vaultBX_wallet_address;
     }catch(err){
@@ -117,10 +122,9 @@ async function get_sign_tx(ro_id_hashing : string, tx_type : string, tx_data : a
         let sign_tx = null;
         let signed_transaction = null;
 
-
         if (tx_type == 'data_up_to_blockchain'){
             const data = await (await get_ro_smart_contract_instance(ro_contract_address))
-                        .methods.set_data_auth(tx_data[0], tx_data[1]).encodeABI();
+                        .methods.set_data_auth(tx_data[0], {roles: tx_data[1].roles, goals: tx_data[1].goals}).encodeABI();
             const tx = {
                 address_from : ro_vaultbx_wallet_address,
                 address_to : ro_contract_address,
@@ -133,7 +137,7 @@ async function get_sign_tx(ro_id_hashing : string, tx_type : string, tx_data : a
                 is_private : false 
             };
 
-            sign_tx = await send_sign_tx(ro_id_hashing, tx)
+            sign_tx = await send_sign_tx(ro_id_hashing, tx);
             signed_transaction = sign_tx?.data.data.signed_transaction;
             console.log('[vaultBX-get_sign_tx] get sign_tx :', signed_transaction);
         
