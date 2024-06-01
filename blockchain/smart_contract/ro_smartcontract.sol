@@ -1,6 +1,3 @@
-// smart contract for each RO
-
-
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
@@ -10,62 +7,67 @@ import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 
 contract RO_smart_contract is Ownable, Initializable {
 
-    // 记录唯一标识符
     string public RO_id_hashing;
 
-    // data_auth_format
-    struct DataAuthFormat {
+    struct DataAuthEntry {
         string[] roles;
         string[] goals;
-    }
-
-    // 数据认证映射表
-    struct DataAuthEntry {
-        DataAuthFormat dataAuth;
         uint256 timestamp;
     }
 
-    /* sha256(data_id) => DataAuthFormat {
-            string[] roles;
-            string[] goals;
-        }
-    */
     mapping(string => DataAuthEntry) public dataAuthMap;
 
-    // Modified constructor to pass initial owner
+    // Define event for setting data authorization and potential errors
+    event DataAuthSet(string indexed dataId, bool success, string message);
+    event ErrorOccurred(string indexed dataId, string message);
+
     constructor(string memory _RO_id_hashing) Ownable(msg.sender) {
         initialize(_RO_id_hashing);
     }
 
-
-    // 合约初始化方法
     function initialize(string memory _RO_id_hashing) public initializer {
         RO_id_hashing = _RO_id_hashing;
-        transferOwnership(msg.sender);  // 将合约所有者设置為部署者
+        transferOwnership(msg.sender);
     }
 
-    // 修改或新增數據驗證
-    function set_data_auth(string memory data_id, DataAuthFormat memory data_auth) public onlyOwner {
+    function set_data_auth(string memory data_id, string[] memory _roles, string[] memory _goals) public onlyOwner {
+        // Use internal function to set data authorization
+        bool result = setInternalDataAuth(data_id, _roles, _goals);
+        if (result) {
+            emit DataAuthSet(data_id, true, "Data authorization set successfully");
+        } else {
+            emit DataAuthSet(data_id, false, "Failed to set data authorization");
+            emit ErrorOccurred(data_id, "Check data structure or state limits");
+        }
+    }
+
+    // Internal function to handle data setting logic
+    function setInternalDataAuth(string memory data_id, string[] memory _roles, string[] memory _goals) internal returns (bool) {
+        // Here you can add more complex checks or operations
+        bool isSuccessful = true;
+        // Ensure no array overflow or other conditions
+        assert(_roles.length < 100 && _goals.length < 100);
         dataAuthMap[data_id] = DataAuthEntry({
-            dataAuth: data_auth,
+            roles: _roles,
+            goals: _goals,
             timestamp: block.timestamp
         });
+        return isSuccessful;
     }
 
-    // 驗證數據認證
-    function verify_rp(string memory data_id, DataAuthFormat memory rp_data) public view onlyOwner returns (bool, string memory) {
-        DataAuthEntry memory entry = dataAuthMap[data_id];
-
+    // Updated verify_rp function to use the updated structure
+    function verify_rp(string memory data_id, string[] memory _roles, string[] memory _goals) public view onlyOwner returns (bool, string memory){
+        DataAuthEntry storage entry = dataAuthMap[data_id];
         // Check if the data entry exists
         if (entry.timestamp == 0) {
             return (false, "[PASS Failed] No data entry found for this data_id");
         }
 
         // Check roles
-        for (uint i = 0; i < rp_data.roles.length; i++) {
+        for (uint i = 0; i < _roles.length; i++) {
             bool roleFound = false;
-            for (uint j = 0; j < entry.dataAuth.roles.length; j++) {
-                if (keccak256(abi.encodePacked(rp_data.roles[i])) == keccak256(abi.encodePacked(entry.dataAuth.roles[j]))) {
+            for (uint j = 0; j < entry.roles.length; j++) {
+                if (keccak256(abi.encodePacked(_roles[i])) == keccak256(abi.encodePacked(entry.roles[j]))) {
                     roleFound = true;
                     break;
                 }
@@ -76,10 +78,10 @@ contract RO_smart_contract is Ownable, Initializable {
         }
 
         // Check goals
-        for (uint i = 0; i < rp_data.goals.length; i++) {
+        for (uint i = 0; i < _goals.length; i++) {
             bool goalFound = false;
-            for (uint j = 0; j < entry.dataAuth.goals.length; j++) {
-                if (keccak256(abi.encodePacked(rp_data.goals[i])) == keccak256(abi.encodePacked(entry.dataAuth.goals[j]))) {
+            for (uint j = 0; j < entry.goals.length; j++) {
+                if (keccak256(abi.encodePacked(_goals[i])) == keccak256(abi.encodePacked(entry.goals[j]))) {
                     goalFound = true;
                     break;
                 }
@@ -88,7 +90,6 @@ contract RO_smart_contract is Ownable, Initializable {
                 return (false, "[PASS Failed] RP goals are invalid");
             }
         }
-
         return (true, "[PASS] RP is valid in the verification");
     }
 }

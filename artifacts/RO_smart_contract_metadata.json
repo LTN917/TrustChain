@@ -52,6 +52,50 @@
 				"anonymous": false,
 				"inputs": [
 					{
+						"indexed": true,
+						"internalType": "string",
+						"name": "dataId",
+						"type": "string"
+					},
+					{
+						"indexed": false,
+						"internalType": "bool",
+						"name": "success",
+						"type": "bool"
+					},
+					{
+						"indexed": false,
+						"internalType": "string",
+						"name": "message",
+						"type": "string"
+					}
+				],
+				"name": "DataAuthSet",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "string",
+						"name": "dataId",
+						"type": "string"
+					},
+					{
+						"indexed": false,
+						"internalType": "string",
+						"name": "message",
+						"type": "string"
+					}
+				],
+				"name": "ErrorOccurred",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
 						"indexed": false,
 						"internalType": "uint64",
 						"name": "version",
@@ -104,23 +148,6 @@
 				"name": "dataAuthMap",
 				"outputs": [
 					{
-						"components": [
-							{
-								"internalType": "string[]",
-								"name": "roles",
-								"type": "string[]"
-							},
-							{
-								"internalType": "string[]",
-								"name": "goals",
-								"type": "string[]"
-							}
-						],
-						"internalType": "struct RO_smart_contract.DataAuthFormat",
-						"name": "dataAuth",
-						"type": "tuple"
-					},
-					{
 						"internalType": "uint256",
 						"name": "timestamp",
 						"type": "uint256"
@@ -170,21 +197,14 @@
 						"type": "string"
 					},
 					{
-						"components": [
-							{
-								"internalType": "string[]",
-								"name": "roles",
-								"type": "string[]"
-							},
-							{
-								"internalType": "string[]",
-								"name": "goals",
-								"type": "string[]"
-							}
-						],
-						"internalType": "struct RO_smart_contract.DataAuthFormat",
-						"name": "data_auth",
-						"type": "tuple"
+						"internalType": "string[]",
+						"name": "_roles",
+						"type": "string[]"
+					},
+					{
+						"internalType": "string[]",
+						"name": "_goals",
+						"type": "string[]"
 					}
 				],
 				"name": "set_data_auth",
@@ -213,21 +233,14 @@
 						"type": "string"
 					},
 					{
-						"components": [
-							{
-								"internalType": "string[]",
-								"name": "roles",
-								"type": "string[]"
-							},
-							{
-								"internalType": "string[]",
-								"name": "goals",
-								"type": "string[]"
-							}
-						],
-						"internalType": "struct RO_smart_contract.DataAuthFormat",
-						"name": "rp_data",
-						"type": "tuple"
+						"internalType": "string[]",
+						"name": "_roles",
+						"type": "string[]"
+					},
+					{
+						"internalType": "string[]",
+						"name": "_goals",
+						"type": "string[]"
 					}
 				],
 				"name": "verify_rp",
@@ -344,11 +357,11 @@
 			]
 		},
 		"blockchain\\smart_contract\\ro_smartcontract.sol": {
-			"keccak256": "0x894f6010932a4c4722ec76068ec519ab153d764794f8ec9258bfd0ea6c5fe59b",
+			"keccak256": "0x072ec794b661a19689198efe983421f3d354a1363c706105293bc9c4d9ca0d82",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://f77b91ca4da2f6007bbc01eaf5621f3984bbd0b78fba2390c38cb936e10336f5",
-				"dweb:/ipfs/QmZPQmgUiqmN9s5yJRUgZaHmok6qRWtJVN3QxejrAnVgcX"
+				"bzz-raw://4d8d417ffe41bb8f368b31de7bfcd4391a661ed2d30959cd7c3b64567b921e4f",
+				"dweb:/ipfs/QmR1i5PmfHQfYMR6gqXGEdKktrC5HDsNP4yy6cmq26DJKf"
 			]
 		}
 	},

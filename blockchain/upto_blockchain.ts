@@ -29,7 +29,7 @@ type Entry_Hashing = {
 }
 
 // return the format of entry
-const dataHashing = async (entry:Entry) => {
+const dataFormatting = async (entry:Entry) => {
 
     const entry_hashing : Entry_Hashing = {
       RO_id_hash: sha256(entry.RO_id),
@@ -49,14 +49,14 @@ const dataHashing = async (entry:Entry) => {
 export default async function upto_blockchain(entry : Entry) {
   try{
     // hashing req entry
-    const entry_hashing = await dataHashing(entry);
+    const entry_hashing = await dataFormatting(entry);
 
     // return sign_tx of RO
-    const signed_transaction = await get_sign_tx(entry_hashing.RO_id_hash, "data_up_to_blockchain", [entry_hashing.data_id_hash, entry_hashing.data_auth_hash]);
+    const signed_transaction = await get_sign_tx(entry_hashing.RO_id_hash, "data_up_to_blockchain", [entry_hashing.data_id_hash, entry_hashing.data_auth_hash.roles,  entry_hashing.data_auth_hash.goals]);
     // up entry hashing to blockchain
     if(signed_transaction){
       try {
-        const receipt = await web3.eth.sendSignedTransaction(signed_transaction);
+        const receipt = await web3.eth.sendSignedTransaction(signed_transaction as string);
         console.log('[upto_blockchain] Transaction sent tx_receipt:', receipt);
         console.log(`[upto_blockchain] data up to blockchain for data : ${entry_hashing.data_id_hash} [OK]`);
       } catch (error) {
