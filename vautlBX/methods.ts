@@ -123,14 +123,15 @@ async function get_sign_tx(ro_id_hashing : string, tx_type : string, tx_data : a
         let signed_transaction = null;
 
         if (tx_type == 'data_up_to_blockchain'){
+            console.log('[test - tx_data] ', 'tx_data[0] :', tx_data[0], 'tx_data[1] :', tx_data[1], 'tx_data[2] :', tx_data[2]);
             const data = await (await get_ro_smart_contract_instance(ro_contract_address))
                         .methods.set_data_auth(tx_data[0], tx_data[1], tx_data[2]).encodeABI();
-            console.log('[test 1]', data);
+            console.log('[test - data]', data);
             const tx = {
                 address_from : ro_vaultbx_wallet_address,
                 address_to : ro_contract_address,
                 chainID : "1337", 
-                amount : "10",  
+                amount : "0",  
                 gas_price : await web3.eth.getGasPrice(),  
                 gas_limit : 6000000,  
                 nonce : await web3.eth.getTransactionCount(ro_vaultbx_wallet_address, 'latest'),  
@@ -139,7 +140,7 @@ async function get_sign_tx(ro_id_hashing : string, tx_type : string, tx_data : a
             };
 
             sign_tx = await send_sign_tx(ro_id_hashing, tx);
-            console.log('[test-2] ', sign_tx);
+            console.log('[test - sign_tx] ', sign_tx);
             signed_transaction = sign_tx?.data.data.signed_transaction;
             console.log('[vaultBX-get_sign_tx] get sign_tx :', signed_transaction);
         

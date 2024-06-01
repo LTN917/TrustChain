@@ -52,44 +52,13 @@
 				"anonymous": false,
 				"inputs": [
 					{
-						"indexed": true,
-						"internalType": "string",
-						"name": "dataId",
-						"type": "string"
-					},
-					{
-						"indexed": false,
-						"internalType": "bool",
-						"name": "success",
-						"type": "bool"
-					},
-					{
 						"indexed": false,
 						"internalType": "string",
 						"name": "message",
 						"type": "string"
 					}
 				],
-				"name": "DataAuthSet",
-				"type": "event"
-			},
-			{
-				"anonymous": false,
-				"inputs": [
-					{
-						"indexed": true,
-						"internalType": "string",
-						"name": "dataId",
-						"type": "string"
-					},
-					{
-						"indexed": false,
-						"internalType": "string",
-						"name": "message",
-						"type": "string"
-					}
-				],
-				"name": "ErrorOccurred",
+				"name": "Debug",
 				"type": "event"
 			},
 			{
@@ -143,13 +112,61 @@
 						"internalType": "string",
 						"name": "",
 						"type": "string"
+					},
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
 					}
 				],
-				"name": "dataAuthMap",
+				"name": "dataid_authgoals",
+				"outputs": [
+					{
+						"internalType": "string",
+						"name": "",
+						"type": "string"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "string",
+						"name": "",
+						"type": "string"
+					},
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"name": "dataid_authroles",
+				"outputs": [
+					{
+						"internalType": "string",
+						"name": "",
+						"type": "string"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "string",
+						"name": "",
+						"type": "string"
+					}
+				],
+				"name": "dataid_timestamp",
 				"outputs": [
 					{
 						"internalType": "uint256",
-						"name": "timestamp",
+						"name": "",
 						"type": "uint256"
 					}
 				],
@@ -198,12 +215,12 @@
 					},
 					{
 						"internalType": "string[]",
-						"name": "_roles",
+						"name": "authroles",
 						"type": "string[]"
 					},
 					{
 						"internalType": "string[]",
-						"name": "_goals",
+						"name": "authgoals",
 						"type": "string[]"
 					}
 				],
@@ -234,12 +251,12 @@
 					},
 					{
 						"internalType": "string[]",
-						"name": "_roles",
+						"name": "rp_auth_roles",
 						"type": "string[]"
 					},
 					{
 						"internalType": "string[]",
-						"name": "_goals",
+						"name": "rp_auth_goals",
 						"type": "string[]"
 					}
 				],
@@ -357,11 +374,11 @@
 			]
 		},
 		"blockchain\\smart_contract\\ro_smartcontract.sol": {
-			"keccak256": "0x072ec794b661a19689198efe983421f3d354a1363c706105293bc9c4d9ca0d82",
+			"keccak256": "0x9ea2ad641f7d94bd52b07ff25e568454429fb98e455784d5b0f4d5e5a828e552",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://4d8d417ffe41bb8f368b31de7bfcd4391a661ed2d30959cd7c3b64567b921e4f",
-				"dweb:/ipfs/QmR1i5PmfHQfYMR6gqXGEdKktrC5HDsNP4yy6cmq26DJKf"
+				"bzz-raw://6512d95e94774d1089a5defc5818aa96d82917a057dfedeefc15e23b4ccd82ae",
+				"dweb:/ipfs/QmYVgMWcmpfyaWpnV38UBuTv6Uzzvg94mGwB3r6vMABkx3"
 			]
 		}
 	},

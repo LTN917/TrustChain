@@ -56,7 +56,7 @@ export default async function upto_blockchain(entry : Entry) {
     // up entry hashing to blockchain
     if(signed_transaction){
       try {
-        const receipt = await web3.eth.sendSignedTransaction(signed_transaction as string);
+        const receipt = await web3.eth.sendSignedTransaction(signed_transaction);
         console.log('[upto_blockchain] Transaction sent tx_receipt:', receipt);
         console.log(`[upto_blockchain] data up to blockchain for data : ${entry_hashing.data_id_hash} [OK]`);
       } catch (error) {
