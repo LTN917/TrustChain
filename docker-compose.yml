@@ -1,0 +1,32 @@
+version: '3.8'
+
+x-project-name: &project-name finaltrustchain
+
+services:
+  vault:
+    image: ltnisgod/vault_blockchain:v1.0
+    container_name: vaultBX
+    ports:
+      - "8200:8200"
+    environment:
+      VAULT_DEV_ROOT_TOKEN_ID: myroot
+      VAULT_DEV_LISTEN_ADDRESS: 0.0.0.0:8200
+    cap_add:
+      - IPC_LOCK
+
+  hardhat:
+    image: ltnisgod/hardhat:v1.0
+    container_name: hardhat
+    ports:
+      - "8545:8545"
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+networks:
+  default:
+    driver: bridge
