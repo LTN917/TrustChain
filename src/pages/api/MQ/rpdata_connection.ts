@@ -1,8 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { connect } from 'amqplib';
 
-import { upto_blockchain } from '../../../../blockchain/upto_blockchain';
-import { deploy_roid_address } from '../../../../blockchain/ethereum_env';
+import { verify_onblockchain } from '../../../../blockchain/verify_onblackchain';
 
 // queue setting
 let connection:any;
@@ -17,7 +16,7 @@ let activeTasks = 0;
 
 // Entry
 type Entry = {
-  RO_id: string;
+  RP_id: string;
   data_id: string;
   data_auth : {
     roles: string[];
@@ -27,12 +26,12 @@ type Entry = {
 
 // raw data to Entry
 function formatEntry(data: any): Entry {
-  if (!data.RO_id || !data.data_id || !data.data_auth || !Array.isArray(data.data_auth.roles) || !Array.isArray(data.data_auth.goals)) {
+  if (!data.RP_id || !data.data_id || !data.data_auth || !Array.isArray(data.data_auth.roles) || !Array.isArray(data.data_auth.goals)) {
     throw new Error('Invalid data structure');
   }
 
   return {
-    RO_id: data.RO_id,
+    RP_id: data.RP_id,
     data_id: data.data_id,
     data_auth: {
       roles: data.data_auth.roles,
@@ -88,7 +87,7 @@ async function startConsumer(){
         console.log('[Consumer] data up to blockchain...');
 
         try{
-          await upto_blockchain(entryData);
+          await verify_onblockchain(entryData);
           ConsumerChannel.ack(msg);
           await new Promise(resolve => setTimeout(resolve, 10000)); // time buffer
         }catch(err){
@@ -127,14 +126,12 @@ async function adjustConsumers(){
 
 
 
-//  ================================== system_connection API  ================================== 
+//  ================================== rpdata_connection API  ================================== 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
 
   try{
     if (req.method === 'POST') {
-      console.log(`============================= [Trust Chain] start connect ${"test_platform"} =============================`)
-      // init roid_address smart contract
-      await deploy_roid_address("test_platform");
+      console.log(`============================= [Trust Chain] verify authorization for ${"test_RP"} =============================`)
       // init rabbitMQ setting
       await initRabbitMQ();
       await startConsumer();
@@ -146,16 +143,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }      
       await new Promise(resolve => setTimeout(resolve, 10000)); // Delay to process messages
 
-      console.log(`============================= [Trust Chain] start connect ${"test_platform"} [done] =============================`)
+      console.log(`============================= [Trust Chain] verify authorization for ${"test_RP"} [done] =============================`)
 
       res.status(200).json({ message: 'Finished processing all messages.' });
 
     } else {
       res.setHeader('Allow', ['POST']);
-      res.status(405).end(`[API-system_connection] Method ${req.method} Not Allowed`);
+      res.status(405).end(`[API-rpdata_connection] Method ${req.method} Not Allowed`);
     }
   }catch(err){
-    console.error(`[API-system_connection] request failed: ${err}`);
+    console.error(`[API-rpdata_connection] request failed: ${err}`);
     res.status(500).json({ error: 'Internal server error' });
   }finally{
     await closeRabbitMQ();

@@ -144,7 +144,7 @@ async function get_sign_tx(ro_id_hashing : string, tx_type : string, tx_data : a
             signed_transaction = sign_tx?.data.data.signed_transaction;
             console.log('[vaultBX-get_sign_tx] get sign_tx :', signed_transaction);
         
-        }else if(tx_type == 'verify_rp'){
+        }else if(tx_type == 'verify_onblockchain'){
 
         }
 
