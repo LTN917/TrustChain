@@ -55,6 +55,25 @@
 				"inputs": [
 					{
 						"internalType": "string",
+						"name": "dataid_hash",
+						"type": "string"
+					}
+				],
+				"name": "getRoid",
+				"outputs": [
+					{
+						"internalType": "string",
+						"name": "",
+						"type": "string"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "string",
 						"name": "roid_hashing",
 						"type": "string"
 					}
@@ -105,6 +124,24 @@
 			{
 				"inputs": [],
 				"name": "renounceOwnership",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "string",
+						"name": "dataid_hash",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "roid_hash",
+						"type": "string"
+					}
+				],
+				"name": "setDataidRoid",
 				"outputs": [],
 				"stateMutability": "nonpayable",
 				"type": "function"
@@ -249,11 +286,11 @@
 			]
 		},
 		"blockchain\\smart_contract\\roid_address.sol": {
-			"keccak256": "0x0158ba0381b5368ea76292676c38c1ace40c9ee4bcf10d713160917e69aff8e6",
+			"keccak256": "0x66dccf2541eea87d4a615af6f9734738a566e156578148f53c1c5965322e3b76",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://290c7233e27cff47c5e4916f4b509946866889368910c3f0ebcc6b92f2ad36dc",
-				"dweb:/ipfs/QmZKPVA9anyiQtNFM8aAoExkAJc6WnUXqmBQwEwYgKEAEP"
+				"bzz-raw://eaace4ee41501a0ef4a948a93dd336e0118fa09dde9ff3fb1e4a85507b28da77",
+				"dweb:/ipfs/QmVfyh7XjbwgbSGhB17UWx7cUj7E4LF7zCbhLZHs8jpJVd"
 			]
 		}
 	},

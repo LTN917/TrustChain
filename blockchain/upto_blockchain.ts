@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { web3, roid_address_smart_contract_instance, deploy_ro_smartcontract, get_ro_smart_contract_instance } from './ethereum_env';
+import { web3, roid_address_smart_contract_instance, deploy_ro_smartcontract, get_ro_smart_contract_instance, get_public_wallet } from './ethereum_env';
 import { get_sign_tx } from '../vautlBX/methods';
 import crypto from 'crypto';
 
@@ -50,6 +50,10 @@ export default async function upto_blockchain(entry : Entry) {
   try{
     // hashing req entry
     const entry_hashing = await dataFormatting(entry);
+
+    // link data_id to ro_id
+    const public_wallet = await get_public_wallet()
+    await (await roid_address_smart_contract_instance).methods.setDataidRoid(entry_hashing.data_id_hash, entry_hashing.RO_id_hash).send({ from: public_wallet });
 
     // return sign_tx of RO
     const signed_transaction = await get_sign_tx(entry_hashing.RO_id_hash, "data_up_to_blockchain", [entry_hashing.data_id_hash, entry_hashing.data_auth_hash.roles,  entry_hashing.data_auth_hash.goals]);

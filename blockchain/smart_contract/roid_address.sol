@@ -12,6 +12,9 @@ contract Roid_address is Ownable {
     // Mapping for roid to smart contract address
     mapping(string => address) private roidSmartContract;
 
+    // Mapping for data_id_hash to ro_id_hashing
+    mapping(string => string) private dataidRoid;
+
     // Modified constructor to pass initial owner
     constructor() Ownable(msg.sender) {
         // Pass the initial owner address to the Ownable contract
@@ -27,6 +30,10 @@ contract Roid_address is Ownable {
         roidSmartContract[roid_hash] = smartContract_address;
     }
 
+    function setDataidRoid(string memory dataid_hash, string memory roid_hash) public onlyOwner() {
+        dataidRoid[dataid_hash] = roid_hash;
+    }
+
     // Function to verify if the given vaultBX matches the stored address for the roid
     function verifyVaultBX(string memory roid_hashing, address vaultBX_address) public view returns (bool) {
         return roidVaultBX[roid_hashing] == vaultBX_address;
@@ -40,5 +47,9 @@ contract Roid_address is Ownable {
     // Function to retrieve the smart contract address associated with a given roid
     function getSmartContract(string memory roid_hashing) public onlyOwner view returns (address) {
         return roidSmartContract[roid_hashing];
+    }
+
+    function getRoid(string memory dataid_hash) public onlyOwner() view returns (string memory){
+        return dataidRoid[dataid_hash];
     }
 }
