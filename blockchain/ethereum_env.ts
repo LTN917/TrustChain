@@ -5,8 +5,10 @@
 
 import Web3 from 'web3';
 import { send_sign_tx } from '../vautlBX/methods';
+import { promises as fs } from 'fs';
+import path from 'path';
 
-export { web3, roid_address_smart_contract_instance, deploy_ro_smartcontract, get_ro_contract_address, get_ro_smart_contract_instance, deploy_roid_address, get_public_wallet };
+export { web3, roid_address_smart_contract_instance, deploy_ro_smartcontract, get_ro_contract_address, get_ro_smart_contract_instance, deploy_roid_address, get_public_wallet, get_roid_address };
 
 
 // creating Web3 instance to localhost Hardhat
@@ -258,12 +260,20 @@ const deploy_roid_address = async (platform_name : string) => {
 
         roid_address_smart_contract_instance = new web3.eth.Contract(roid_address_abi as any, contract_instance.options.address);
 
+        // storing address for API - verify_rp
+        const storageFilePath = path.join(process.cwd(), 'roid_address.txt');
+        await fs.writeFile(storageFilePath, contract_instance.options.address);
+
         console.log(`[deploy smart contract] roid_address deploy for '${platform_name}' at : ${contract_instance.options.address} [OK]`);
 
         return contract_instance.options.address;
     }catch(err){
         console.log(`[deploy smart contract] roid_address error : ${err}`);
     }
+}
+
+const get_roid_address = async (address : string) => {
+    return new web3.eth.Contract(roid_address_abi as any, address);
 }
 
 // ================================ smart contract - ro_smartcontract  =================================================

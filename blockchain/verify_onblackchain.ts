@@ -1,9 +1,13 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { web3, roid_address_smart_contract_instance, deploy_ro_smartcontract, get_ro_smart_contract_instance } from './ethereum_env';
+import { web3, roid_address_smart_contract_instance, deploy_ro_smartcontract, get_ro_smart_contract_instance, get_roid_address } from './ethereum_env';
 import { get_sign_tx } from '../vautlBX/methods';
 import crypto from 'crypto';
+import { promises as fs } from 'fs';
+import path from 'path';
 
 export { verify_onblockchain };
+
+const storageFilePath = path.join(process.cwd(), 'roid_address.txt');
 
 // SHA-256
 const sha256 = (data: string) => crypto.createHash('sha256').update(data).digest('hex');
@@ -52,7 +56,8 @@ export default async function verify_onblockchain(entry : Entry) {
     const entry_hashing = await dataFormatting(entry);
 
     // get roid by dataid
-    let roid_hashing = await (await roid_address_smart_contract_instance).methods.getRoid(entry_hashing.data_id_hash).call();
+    const address = await fs.readFile(storageFilePath, 'utf8');
+    let roid_hashing = await (await get_roid_address(address)).methods.getRoid(entry_hashing.data_id_hash).call();
 
     // return sign_tx of RO
     const signed_transaction = await get_sign_tx(roid_hashing, "verify_onblockchain", [entry_hashing.data_id_hash, entry_hashing.data_auth_hash.roles,  entry_hashing.data_auth_hash.goals]);
