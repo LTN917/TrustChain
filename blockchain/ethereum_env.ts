@@ -273,7 +273,8 @@ const deploy_roid_address = async (platform_name : string) => {
 }
 
 const get_roid_address = async (address : string) => {
-    return new web3.eth.Contract(roid_address_abi as any, address);
+    roid_address_smart_contract_instance = new web3.eth.Contract(roid_address_abi as any, address);
+    return roid_address_smart_contract_instance;
 }
 
 // ================================ smart contract - ro_smartcontract  =================================================
