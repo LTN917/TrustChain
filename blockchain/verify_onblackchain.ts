@@ -59,18 +59,11 @@ export default async function verify_onblockchain(entry : Entry) {
     const address = await fs.readFile(storageFilePath, 'utf8');
     let roid_hashing = await (await get_roid_address(address)).methods.getRoid(entry_hashing.data_id_hash).call();
 
-    // return sign_tx of RO
-    const signed_transaction = await get_sign_tx(roid_hashing, "verify_onblockchain", [entry_hashing.data_id_hash, entry_hashing.data_auth_hash.roles,  entry_hashing.data_auth_hash.goals]);
-    // up entry hashing to blockchain
-    if(signed_transaction){
-      try {
-        const receipt = await web3.eth.sendSignedTransaction(signed_transaction);
-        console.log('[verify_onblockchain] Transaction sent tx_receipt:', receipt);
-        console.log(`[verify_onblockchain] smart contract verify rp of '${entry_hashing.data_id_hash}' [OK]`);
-      } catch (error) {
-        console.error('[verify_onblockchain] Failed to send sign_tx_by_vaultBX:', error);
-      }
-    }
+    // return verify result
+    console.log(`[smart contract method] get verify result ...`);
+    const verify_result = await get_sign_tx(roid_hashing, "verify_onblockchain", [entry_hashing.data_id_hash, entry_hashing.data_auth_hash.roles,  entry_hashing.data_auth_hash.goals]);
+    console.log('[test]', verify_result);
+    console.log(`[smart contract method] RP '${entry.RP_id}' usage of data '${entry.data_id}' verify result : '${verify_result[0]}'`);
   }catch (err){
     console.error(`[verify_onblockchain] entry up to blockchain failed: ${err}`);
   }

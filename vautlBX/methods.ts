@@ -12,7 +12,7 @@ async function get_vaultBX_wallet_address(ro_id_hashing : string){
 
         const public_wallet = await get_public_wallet();
 
-        let ro_vaultbx_wallet_address = await (await roid_address_smart_contract_instance).methods.getSmartContract(ro_id_hashing).call();
+        let ro_vaultbx_wallet_address = await (await roid_address_smart_contract_instance).methods.getVaultBX(ro_id_hashing).call();
         if(ro_vaultbx_wallet_address == "0x0000000000000000000000000000000000000000"){
             ro_vaultbx_wallet_address = await create_vault_wallet(ro_id_hashing);
             await (await roid_address_smart_contract_instance).methods.setVaultBX(ro_id_hashing, ro_vaultbx_wallet_address).send({ from: public_wallet });
@@ -125,6 +125,7 @@ async function get_sign_tx(ro_id_hashing : string, tx_type : string, tx_data : a
         if (tx_type == 'data_up_to_blockchain'){
             const data = await (await get_ro_smart_contract_instance(ro_contract_address))
                         .methods.set_data_auth(tx_data[0], tx_data[1], tx_data[2]).encodeABI();
+            const nonce = await web3.eth.getTransactionCount(ro_vaultbx_wallet_address, 'pending');
             const tx = {
                 address_from : ro_vaultbx_wallet_address,
                 address_to : ro_contract_address,
@@ -132,7 +133,7 @@ async function get_sign_tx(ro_id_hashing : string, tx_type : string, tx_data : a
                 amount : "0",  
                 gas_price : await web3.eth.getGasPrice(),  
                 gas_limit : 6000000,  
-                nonce : await web3.eth.getTransactionCount(ro_vaultbx_wallet_address, 'latest'),  
+                nonce : nonce,  
                 data : data,  
                 is_private : false 
             };
@@ -140,28 +141,20 @@ async function get_sign_tx(ro_id_hashing : string, tx_type : string, tx_data : a
             sign_tx = await send_sign_tx(ro_id_hashing, tx);
             signed_transaction = sign_tx?.data.data.signed_transaction;
             console.log('[vaultBX-get_sign_tx] get sign_tx :', signed_transaction);
+
+            return (signed_transaction != null) ? signed_transaction : "null";
         
         }else if(tx_type == 'verify_onblockchain'){
-            const data = await (await get_ro_smart_contract_instance(ro_contract_address))
-                .methods.verify_rp(tx_data[0], tx_data[1], tx_data[2]).encodeABI();
-            const tx = {
-                address_from : ro_vaultbx_wallet_address,
-                address_to : ro_contract_address,
-                chainID : "1337", 
-                amount : "0",  
-                gas_price : await web3.eth.getGasPrice(),  
-                gas_limit : 6000000,  
-                nonce : await web3.eth.getTransactionCount(ro_vaultbx_wallet_address, 'latest'),  
-                data : data,  
-                is_private : false 
-            };
 
-            sign_tx = await send_sign_tx(ro_id_hashing, tx);
-            signed_transaction = sign_tx?.data.data.signed_transaction;
-            console.log('[vaultBX-get_sign_tx] get sign_tx :', signed_transaction);
+            const public_wallet = await get_public_wallet();
+
+            // no sign_tx, return the result 
+            const result = await (await get_ro_smart_contract_instance(ro_contract_address)).methods.verify_rp(tx_data[0], tx_data[1], tx_data[2]).call({ from : public_wallet });
+
+            return result;
         }
 
-        return (signed_transaction != null) ? signed_transaction : "null";
+
     }catch(err){
         console.log(`[vaultBX-get_sign_tx] execute contract methods failed: ${err}`);
     }

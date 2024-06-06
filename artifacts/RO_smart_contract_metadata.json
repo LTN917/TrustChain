@@ -374,11 +374,11 @@
 			]
 		},
 		"blockchain\\smart_contract\\ro_smartcontract.sol": {
-			"keccak256": "0x9ea2ad641f7d94bd52b07ff25e568454429fb98e455784d5b0f4d5e5a828e552",
+			"keccak256": "0xfb464c07e5fe90d7d4a409f106422655845ed9b98990d1957aae7a3bf640ca92",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://6512d95e94774d1089a5defc5818aa96d82917a057dfedeefc15e23b4ccd82ae",
-				"dweb:/ipfs/QmYVgMWcmpfyaWpnV38UBuTv6Uzzvg94mGwB3r6vMABkx3"
+				"bzz-raw://d97d4ad092f4c44c63c633b1ed337b2f06f2401a1063335eee864aea1f92ac94",
+				"dweb:/ipfs/QmbEM7BNb5UKkofbwxdi9475Jb9VnzTQ1aWkgdedxYdkhJ"
 			]
 		}
 	},

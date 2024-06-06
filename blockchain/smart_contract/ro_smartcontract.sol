@@ -44,7 +44,7 @@ contract RO_smart_contract is Ownable, Initializable {
     }
 
     // 驗證數據認證
-    function verify_rp(string memory data_id, string[] memory rp_auth_roles, string[] memory rp_auth_goals) public view onlyOwner returns (bool, string memory) {
+    function verify_rp(string memory data_id, string[] memory rp_auth_roles, string[] memory rp_auth_goals) public view returns (bool, string memory) {
 
         // get auth info of data
         string[] memory data_authroles = dataid_authroles[data_id];
