@@ -1,0 +1,41 @@
+.navbar {
+    background-color: #333;
+    color: white;
+    padding: 10px 20px;
+    display: flex; /* Enable flexbox for the navbar */
+    justify-content: space-between; /* Align children to the space between */
+    align-items: center; /* Align items vertically */
+    width: 100%;
+}
+
+.navContainer {
+    flex-grow: 1; /* Allows the container to grow and center content */
+    display: flex;
+    justify-content: center; /* Center navigation items horizontally */
+}
+
+.navItems {
+    list-style-type: none;
+    padding: 0;
+    display: flex;
+    gap: 30px; /* Space between each item */
+    margin: 0;
+    padding-left: 20px;
+}
+
+.navItems li a {
+    color: white;
+    text-decoration: none;
+    font-size: 18px;
+}
+
+.authSection {
+    margin-right: 30px; /* Not too far to the right */
+    color: white;
+    font-size: 18px;
+}
+
+.authSection a {
+    color: white;
+    text-decoration: none;
+}
