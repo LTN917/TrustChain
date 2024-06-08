@@ -91,3 +91,17 @@
     color: inherit; /* Inherit the color from the button */
     text-decoration: none; /* Remove underline */
 }
+
+.message {
+    text-align: center;
+    padding: 10px;
+    margin: 10px 0;
+}
+
+.successMessage {
+    color: green;
+}
+
+.errorMessage {
+    color: red;
+}
