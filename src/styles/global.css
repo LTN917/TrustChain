@@ -1,0 +1,9 @@
+:root {
+    --background-color: #fff; /* 默认亮主题背景 */
+    --text-color: #333;       /* 默认亮主题文本颜色 */
+}
+
+body {
+    background-color: var(--background-color);
+    color: var(--text-color);
+}
