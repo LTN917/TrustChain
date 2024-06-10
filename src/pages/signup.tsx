@@ -36,7 +36,7 @@ const Signup: React.FC = () => {
             setMessage({ type: 'success', content: 'Registration successful! Redirecting to home...' });
             const id = setTimeout(() => {
                 router.push('/');
-            }, 3000); // Redirect after 3 seconds
+            }, 38000); // Redirect after 3 seconds
             setTimeoutId(id); // Store the timeout ID for potential cleanup
         } catch (error: any) {
             console.error(error);
