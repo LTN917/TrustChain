@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { useRouter } from 'next/router';
 import Navbar from '../../components/Navbar';
 import styles from '../../../styles/dashboard.module.css';
@@ -13,6 +13,8 @@ const Dashboard = () => {
     const [uploadStatus, setUploadStatus] = useState('');
     const [jsonData, setJsonData] = useState('');
     const [jsonStatus, setJsonStatus] = useState('');
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [operationLogs, setOperationLogs] = useState([]);
 
     const handleTabChange = (tab) => {
         setActiveTab(tab);
@@ -45,26 +47,32 @@ const Dashboard = () => {
             return;
         }
 
+        setIsSubmitting(true);
+        setOperationLogs([...operationLogs, 'Starting upload...']);
+
         try {
             const reader = new FileReader();
-            reader.onload = async (e) => {
-                const text = e.target.result;
+            reader.onload = async (event) => {
                 try {
-                    const jsonData = JSON.parse(text);
-                    const response = await axios.post(apiUrl, jsonData, {
+                    const json = JSON.parse(event.target.result);
+                    const response = await axios.post(apiUrl, json, {
                         headers: {
                             'Content-Type': 'application/json',
                         },
                     });
-                    alert('API call successful: ' + response.data.message);
+                    setOperationLogs([...operationLogs, 'API call successful: ' + response.data.message]);
                 } catch (error) {
+                    setOperationLogs([...operationLogs, 'API call failed: ' + error.message]);
                     alert('Failed to parse JSON or API call failed: ' + error.message);
                 }
             };
             reader.readAsText(file);
         } catch (error) {
+            setOperationLogs([...operationLogs, 'API call failed: ' + error.message]);
             alert('API call failed: ' + error.message);
         }
+
+        setIsSubmitting(false);
     };
 
     const getFeedbackMessage = (type) => {
@@ -73,8 +81,8 @@ const Dashboard = () => {
                    uploadStatus === 'error' ? <p className={styles.errorMessage}>Invalid file type. Please upload a JSON file ❌</p> : null;
         } else if (type === 'json') {
             return jsonStatus === 'success' ? <p className={styles.successMessage}>Valid JSON ✅</p> :
-                   jsonStatus === 'error' ? <p className={styles.errorMessage}>Invalid JSON format ❌</p> : null;
-        }
+                jsonStatus === 'error' ? <p className={styles.errorMessage}>Invalid JSON format ❌</p> : null;
+     }
     };
 
     return (
@@ -101,7 +109,9 @@ const Dashboard = () => {
                             <label htmlFor="fileUpload" className={styles.fileUploadLabel}>Upload Authdata File</label>
                             <input id="fileUpload" type="file" className={styles.fileUploadInput} onChange={handleFileChange}/>
                             {getFeedbackMessage('file')}
-                            <button className={styles.actionButton} onClick={() => handleSubmit('http://localhost:3000/api/MQ/system_connection')}>Send to Blockchain</button>
+                            <button className={styles.actionButton} onClick={() => handleSubmit('http://localhost:3000/api/MQ/system_connection')} disabled={isSubmitting}>
+                                {isSubmitting ? 'Processing...' : 'Send to Blockchain'}
+                            </button>
                         </div>
                     )}
                     {activeTab === 'verify_rp' && (
@@ -112,9 +122,16 @@ const Dashboard = () => {
                             <label htmlFor="fileUpload" className={styles.fileUploadLabel}>Upload RP Info File</label>
                             <input id="fileUpload" type="file" className={styles.fileUploadInput} onChange={handleFileChange}/>
                             {getFeedbackMessage('file')}
-                            <button className={styles.actionButton} onClick={() => handleSubmit('http://localhost:3000/api/MQ/rpdata_connection')}>Verify RP</button>
+                            <button className={styles.actionButton} onClick={() => handleSubmit('http://localhost:3000/api/MQ/rpdata_connection')} disabled={isSubmitting}>
+                                {isSubmitting ? 'Processing...' : 'Verify RP'}
+                            </button>
                         </div>
                     )}
+                    <div className={styles.logContainer}>
+                        {operationLogs.map((log, index) => (
+                            <div key={index} className={styles.logEntry}>{log}</div>
+                        ))}
+                    </div>
                 </div>
             </div>
         </>
