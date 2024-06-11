@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Navbar from '../../components/Navbar';
 import styles from '../../../styles/dashboard.module.css';
@@ -15,6 +15,28 @@ const Dashboard = () => {
     const [jsonStatus, setJsonStatus] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [operationLogs, setOperationLogs] = useState([]);
+
+    useEffect(() => {
+        const ws = new WebSocket('ws://localhost:8080');
+        ws.onmessage = (event) => {
+            console.log("Received data:", event.data);
+            const log = JSON.parse(event.data);
+            setOperationLogs((prevLogs) => [...prevLogs, log]);
+        };
+    
+        ws.onerror = (error) => {
+            console.error("WebSocket Error:", error);
+        };
+    
+        ws.onclose = () => {
+            console.log("WebSocket connection closed");
+        };
+    
+        return () => {
+            ws.close();
+        };
+    }, []);
+    
 
     const handleTabChange = (tab) => {
         setActiveTab(tab);
@@ -41,39 +63,46 @@ const Dashboard = () => {
         }
     };
 
-    const handleSubmit = async (apiUrl) => {
+    const handleSubmit = async (apiUrl: string) => {
         if (!file || uploadStatus !== 'success') {
             alert('Please upload a valid JSON file.');
             return;
         }
-
+    
         setIsSubmitting(true);
-        setOperationLogs([...operationLogs, 'Starting upload...']);
-
-        try {
-            const reader = new FileReader();
-            reader.onload = async (event) => {
-                try {
-                    const json = JSON.parse(event.target.result);
-                    const response = await axios.post(apiUrl, json, {
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                    });
-                    setOperationLogs([...operationLogs, 'API call successful: ' + response.data.message]);
-                } catch (error) {
-                    setOperationLogs([...operationLogs, 'API call failed: ' + error.message]);
-                    alert('Failed to parse JSON or API call failed: ' + error.message);
-                }
-            };
-            reader.readAsText(file);
-        } catch (error) {
-            setOperationLogs([...operationLogs, 'API call failed: ' + error.message]);
-            alert('API call failed: ' + error.message);
-        }
-
+        setOperationLogs(prevLogs => [...prevLogs, 'Starting upload...']);
+    
+        const reader = new FileReader();
+        reader.onload = async (event) => {
+            try {
+                const json = JSON.parse(event.target.result as string);
+                const response = await axios.post(apiUrl, json, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                });
+                setOperationLogs(prevLogs => [
+                    ...prevLogs,
+                    { message: 'API call successful: ' + response.data.message, status: 'success' }
+                ]);
+                alert('API call successful: ' + response.data.message);
+            } catch (error) {
+                setOperationLogs(prevLogs => [
+                    ...prevLogs,
+                    { message: 'API call failed: ' + error.message, status: 'error' }
+                ]);
+                alert('API call failed: ' + error.message);
+            }
+        };
+        reader.onerror = () => {
+            alert('Error reading file');
+        };
+        reader.readAsText(file); // ensure you read the file as text
+    
         setIsSubmitting(false);
     };
+    
+    
 
     const getFeedbackMessage = (type) => {
         if (type === 'file') {
@@ -81,8 +110,8 @@ const Dashboard = () => {
                    uploadStatus === 'error' ? <p className={styles.errorMessage}>Invalid file type. Please upload a JSON file ❌</p> : null;
         } else if (type === 'json') {
             return jsonStatus === 'success' ? <p className={styles.successMessage}>Valid JSON ✅</p> :
-                jsonStatus === 'error' ? <p className={styles.errorMessage}>Invalid JSON format ❌</p> : null;
-     }
+                   jsonStatus === 'error' ? <p className={styles.errorMessage}>Invalid JSON format ❌</p> : null;
+        }
     };
 
     return (
@@ -127,12 +156,16 @@ const Dashboard = () => {
                             </button>
                         </div>
                     )}
-                    <div className={styles.logContainer}>
-                        {operationLogs.map((log, index) => (
-                            <div key={index} className={styles.logEntry}>{log}</div>
-                        ))}
+                        <div className={styles.logContainer}>
+                            {operationLogs.map((log, index) => (
+                                <div key={index} className={styles.logEntry}>
+                                    <span className={styles.logDetail}><strong>Data ID:</strong> {log.data_id}</span>
+                                    <span className={styles.logDetail}><strong>Time:</strong> {log.timestamp}</span>
+                                    <span className={styles.logDetail}><strong>Status:</strong> {log.status === 'error' ? '❌ Error' : '✅ Success'}</span>
+                                </div>
+                            ))}
+                        </div>                    
                     </div>
-                </div>
             </div>
         </>
     );

@@ -80,6 +80,7 @@
 
 .actionButton {
     margin-top: 10px;
+    margin-bottom: 10px;
     padding: 12px 30px;
     background-color: #37949b;
     color: white;
@@ -90,4 +91,15 @@
 
 .actionButton:hover {
     background-color: #2f7d83;
+}
+
+.logEntry {
+    display: flex;
+    align-items: center;
+    justify-content: space-around; /* Adjusts spacing between items */
+    padding: 5px; /* Adds padding around text */
+}
+
+.logDetail {
+    margin-right: 3px; /* Adds space between the labels and the values */
 }
