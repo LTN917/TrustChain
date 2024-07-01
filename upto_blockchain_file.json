@@ -1,0 +1,226 @@
+[
+    {
+        "RO_id": "1",
+        "data_id": "101",
+        "data_auth": {
+            "roles": [
+                "government",
+                "academic"
+            ],
+            "goals": [
+                "government decision",
+                "academic-research"
+            ]
+        }
+    },
+    {
+        "RO_id": "2",
+        "data_id": "102",
+        "data_auth": {
+            "roles": [
+                "government",
+                "commercial"
+            ],
+            "goals": [
+                "government decision",
+                "commercial-use"
+            ]
+        }
+    },
+    {
+        "RO_id": "1",
+        "data_id": "103",
+        "data_auth": {
+            "roles": [
+                "medical",
+                "academic"
+            ],
+            "goals": [
+                "medical-research",
+                "academic-research"
+            ]
+        }
+    },
+    {
+        "RO_id": "3",
+        "data_id": "104",
+        "data_auth": {
+            "roles": [
+                "academic",
+                "commercial"
+            ],
+            "goals": [
+                "academic-research",
+                "commercial-use"
+            ]
+        }
+    },
+    {
+        "RO_id": "2",
+        "data_id": "105",
+        "data_auth": {
+            "roles": [
+                "government",
+                "medical"
+            ],
+            "goals": [
+                "government decision",
+                "medical-research"
+            ]
+        }
+    },
+    {
+        "RO_id": "4",
+        "data_id": "106",
+        "data_auth": {
+            "roles": [
+                "academic",
+                "medical"
+            ],
+            "goals": [
+                "academic-research",
+                "medical-research"
+            ]
+        }
+    },
+    {
+        "RO_id": "3",
+        "data_id": "107",
+        "data_auth": {
+            "roles": [
+                "commercial",
+                "academic"
+            ],
+            "goals": [
+                "commercial-use",
+                "academic-research"
+            ]
+        }
+    },
+    {
+        "RO_id": "5",
+        "data_id": "108",
+        "data_auth": {
+            "roles": [
+                "government",
+                "academic"
+            ],
+            "goals": [
+                "government decision",
+                "academic-research"
+            ]
+        }
+    },
+    {
+        "RO_id": "4",
+        "data_id": "109",
+        "data_auth": {
+            "roles": [
+                "medical",
+                "commercial"
+            ],
+            "goals": [
+                "medical-research",
+                "commercial-use"
+            ]
+        }
+    },
+    {
+        "RO_id": "5",
+        "data_id": "110",
+        "data_auth": {
+            "roles": [
+                "government",
+                "medical"
+            ],
+            "goals": [
+                "government decision",
+                "medical-research"
+            ]
+        }
+    },
+    {
+        "RO_id": "6",
+        "data_id": "111",
+        "data_auth": {
+            "roles": [
+                "government",
+                "academic"
+            ],
+            "goals": [
+                "government decision",
+                "academic-research"
+            ]
+        }
+    },
+    {
+        "RO_id": "1",
+        "data_id": "112",
+        "data_auth": {
+            "roles": [
+                "medical",
+                "government"
+            ],
+            "goals": [
+                "medical-research",
+                "government decision"
+            ]
+        }
+    },
+    {
+        "RO_id": "3",
+        "data_id": "113",
+        "data_auth": {
+            "roles": [
+                "academic",
+                "commercial"
+            ],
+            "goals": [
+                "academic-research",
+                "commercial-use"
+            ]
+        }
+    },
+    {
+        "RO_id": "2",
+        "data_id": "114",
+        "data_auth": {
+            "roles": [
+                "government",
+                "medical"
+            ],
+            "goals": [
+                "government decision",
+                "medical-research"
+            ]
+        }
+    },
+    {
+        "RO_id": "4",
+        "data_id": "115",
+        "data_auth": {
+            "roles": [
+                "academic",
+                "government"
+            ],
+            "goals": [
+                "academic-research",
+                "government decision"
+            ]
+        }
+    },
+    {
+        "RO_id": "5",
+        "data_id": "116",
+        "data_auth": {
+            "roles": [
+                "commercial",
+                "government"
+            ],
+            "goals": [
+                "commercial-use",
+                "government decision"
+            ]
+        }
+    }
+]
