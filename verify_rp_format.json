@@ -3,6 +3,6 @@
     "data_id": "string", 
     "data_auth": {
       "roles": ["string"],  
-      "goals": ["string"]
+      "purposes": ["string"]
     }
 }

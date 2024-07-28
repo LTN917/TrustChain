@@ -27,7 +27,12 @@ type Entry = {
 
 // raw data to Entry
 function formatEntry(data: any): Entry {
-  if (!data.RO_id || !data.data_id || !data.data_auth || !Array.isArray(data.data_auth.roles) || !Array.isArray(data.data_auth.goals)) {
+  if(!data.RO_id || 
+      !data.data_id || 
+      !data.data_auth || 
+      !Array.isArray(data.data_auth.roles) || 
+      !Array.isArray(data.data_auth.goals)
+    ){
     throw new Error('Invalid data structure');
   }
 

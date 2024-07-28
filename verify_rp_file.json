@@ -6,32 +6,32 @@
             "roles": [
                 "academic"
             ],
-            "goals": [
+            "purposes": [
                 "government decision"
             ]
         }
     },
     {
-        "RP_id": "B",
+        "RP_id": "A",
         "data_id": "102",
         "data_auth": {
             "roles": [
                 "government"
             ],
-            "goals": [
+            "purposes": [
                 "government decision"
             ]
         }
     },
     {
-        "RP_id": "C",
+        "RP_id": "A",
         "data_id": "103",
         "data_auth": {
             "roles": [
                 "medical",
                 "academic"
             ],
-            "goals": [
+            "purposes": [
                 "academic-research"
             ]
         }
@@ -43,7 +43,7 @@
             "roles": [
                 "commercial"
             ],
-            "goals": [
+            "purposes": [
                 "government decision"
             ]
         }
@@ -56,7 +56,7 @@
                 "government",
                 "medical"
             ],
-            "goals": [
+            "purposes": [
                 "government decision"
             ]
         }
@@ -68,7 +68,7 @@
             "roles": [
                 "government"
             ],
-            "goals": [
+            "purposes": [
                 "medical-research"
             ]
         }
@@ -80,7 +80,7 @@
             "roles": [
                 "commercial"
             ],
-            "goals": [
+            "purposes": [
                 "commercial-use"
             ]
         }
@@ -93,7 +93,7 @@
                 "government",
                 "academic"
             ],
-            "goals": [
+            "purposes": [
                 "medical-research"
             ]
         }
@@ -105,7 +105,7 @@
             "roles": [
                 "medical"
             ],
-            "goals": [
+            "purposes": [
                 "medical-research"
             ]
         }
@@ -117,7 +117,7 @@
             "roles": [
                 "academic"
             ],
-            "goals": [
+            "purposes": [
                 "government decision"
             ]
         }
@@ -129,7 +129,7 @@
             "roles": [
                 "academic"
             ],
-            "goals": [
+            "purposes": [
                 "academic-research"
             ]
         }
@@ -141,7 +141,7 @@
             "roles": [
                 "medical"
             ],
-            "goals": [
+            "purposes": [
                 "commercial-use"
             ]
         }
@@ -153,7 +153,7 @@
             "roles": [
                 "academic"
             ],
-            "goals": [
+            "purposes": [
                 "commercial-use"
             ]
         }
@@ -165,7 +165,7 @@
             "roles": [
                 "government"
             ],
-            "goals": [
+            "purposes": [
                 "government decision"
             ]
         }
@@ -178,7 +178,7 @@
                 "academic",
                 "medical"
             ],
-            "goals": [
+            "purposes": [
                 "academic-research"
             ]
         }
@@ -190,7 +190,7 @@
             "roles": [
                 "government"
             ],
-            "goals": [
+            "purposes": [
                 "government decision"
             ]
         }

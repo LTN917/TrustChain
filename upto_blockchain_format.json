@@ -1,0 +1,8 @@
+{
+    "RO_id": "string", 
+    "data_id": "string", 
+    "data_auth": {
+      "roles": ["string"],  
+      "purposes": ["string"]
+    }
+}
